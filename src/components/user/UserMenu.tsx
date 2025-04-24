@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { settings, user, logOut } from "lucide-react";
+import { Settings, User, LogOut } from "lucide-react";
 
 interface UserMenuProps {
   user: {
@@ -50,17 +50,17 @@ const UserMenu = ({ user }: UserMenuProps) => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <user className="mr-2 h-4 w-4" />
+            <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <settings className="mr-2 h-4 w-4" />
+            <Settings className="mr-2 h-4 w-4" />
             <span>Settings</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="text-red-600">
-          <logOut className="mr-2 h-4 w-4" />
+          <LogOut className="mr-2 h-4 w-4" />
           <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
