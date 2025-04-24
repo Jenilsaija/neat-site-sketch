@@ -1,8 +1,8 @@
-
 import React from 'react';
-import { Search, ChevronDown } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import NotificationsPopover from './notifications/NotificationsPopover';
+import UserMenu from './user/UserMenu';
 
 export interface HeaderProps {
   title: string;
@@ -33,15 +33,7 @@ const Header = ({ title, subtitle, user, notificationCount = 0 }: HeaderProps) =
         </div>
         
         <NotificationsPopover notificationCount={notificationCount} />
-        
-        <div className="flex items-center gap-2">
-          <img
-            src={user.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.name}`}
-            alt={user.name}
-            className="w-8 h-8 rounded-full object-cover"
-          />
-          <ChevronDown size={16} className="text-gray-600" />
-        </div>
+        <UserMenu user={user} />
       </div>
     </header>
   );
