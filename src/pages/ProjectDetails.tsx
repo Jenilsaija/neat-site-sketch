@@ -15,7 +15,8 @@ interface ProjectDetailsProps {
   project: {
     id: string;
     name: string;
-    tasks: Record<string, any[]>;
+    // Removing the tasks requirement from here since our Project type doesn't have it
+    // We're already using the tasks from the imported mockData
   };
 }
 
