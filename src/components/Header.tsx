@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { Search, Bell, ChevronDown } from 'lucide-react';
+import { Search, ChevronDown } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import NotificationsPopover from './notifications/NotificationsPopover';
 
 export interface HeaderProps {
   title: string;
@@ -31,14 +32,7 @@ const Header = ({ title, subtitle, user, notificationCount = 0 }: HeaderProps) =
           />
         </div>
         
-        <div className="relative">
-          <Bell size={20} className="text-gray-600" />
-          {notificationCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-app-red text-white">
-              {notificationCount}
-            </Badge>
-          )}
-        </div>
+        <NotificationsPopover notificationCount={notificationCount} />
         
         <div className="flex items-center gap-2">
           <img
