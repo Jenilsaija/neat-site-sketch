@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
@@ -11,6 +10,7 @@ import Team from "./pages/Team";
 import ProjectDetails from "./pages/ProjectDetails";
 import NotFound from "./pages/NotFound";
 import Messages from "./pages/Messages";
+import Profile from "./pages/Profile";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
 
 const queryClient = new QueryClient();
@@ -53,6 +53,9 @@ const App = () => (
               } />
               <Route path="/messages" element={
                 <Messages />
+              } />
+              <Route path="/profile" element={
+                <Profile user={currentUser} />
               } />
               <Route path="*" element={<NotFound />} />
             </Routes>
