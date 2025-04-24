@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -32,23 +33,16 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 222.2 84% 4.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 217 100% 50%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 217 100% 50%;
+    --sidebar-accent: 217 100% 45%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 100%;
+    --sidebar-ring: 0 0% 100%;
   }
 
   .dark {
@@ -79,14 +73,6 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -98,4 +84,32 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.task-card {
+  @apply rounded-lg border border-border bg-white p-4 shadow-sm transition-all hover:shadow-md;
+}
+
+.project-card {
+  @apply rounded-lg border border-border bg-white p-6 shadow-sm transition-all hover:shadow-md;
+}
+
+.project-progress-bar {
+  @apply h-2 w-full rounded-full bg-gray-100 overflow-hidden;
+}
+
+.progress-bar-fill {
+  @apply h-full rounded-full;
+}
+
+.avatar-stack {
+  @apply flex -space-x-2;
+}
+
+.avatar-stack img {
+  @apply rounded-full border-2 border-white w-8 h-8;
+}
+
+.task-tag {
+  @apply px-2 py-1 rounded-full text-xs font-medium;
 }
