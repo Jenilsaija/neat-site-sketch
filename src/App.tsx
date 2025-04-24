@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,7 @@ import Projects from "./pages/Projects";
 import Team from "./pages/Team";
 import ProjectDetails from "./pages/ProjectDetails";
 import NotFound from "./pages/NotFound";
+import Messages from "./pages/Messages";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
 
 const queryClient = new QueryClient();
@@ -49,6 +49,9 @@ const App = () => (
                   user={currentUser}
                   project={projects[0]}
                 />
+              } />
+              <Route path="/messages" element={
+                <Messages />
               } />
               <Route path="*" element={<NotFound />} />
             </Routes>
