@@ -9,7 +9,7 @@ const messages = [
   {
     id: '1',
     sender: 'Sarah Miller',
-    content: 'Hi! How's the project coming along?',
+    content: "Hi! How's the project coming along?",
     time: '10:30 AM',
     isSender: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
@@ -17,7 +17,7 @@ const messages = [
   {
     id: '2',
     sender: 'You',
-    content: 'Hey Sarah! It's going well. I've completed the initial designs.',
+    content: "Hey Sarah! It's going well. I've completed the initial designs.",
     time: '10:32 AM',
     isSender: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=You'
@@ -25,7 +25,7 @@ const messages = [
   {
     id: '3',
     sender: 'Sarah Miller',
-    content: 'That's great! Can we schedule a review meeting?',
+    content: "That's great! Can we schedule a review meeting?",
     time: '10:33 AM',
     isSender: false,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'

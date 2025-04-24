@@ -6,7 +6,7 @@ const conversations = [
   {
     id: '1',
     name: 'Sarah Miller',
-    lastMessage: 'Sure, let's meet at 3 PM',
+    lastMessage: "Sure, let's meet at 3 PM",
     time: '2m ago',
     unread: true,
     avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
