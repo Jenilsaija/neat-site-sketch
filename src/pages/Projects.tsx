@@ -42,7 +42,7 @@ const Projects = ({ user, projects: initialProjects }: ProjectsProps) => {
     description: '',
     icon: '📁',
     color: '#0061FF',
-    status: 'pending',
+    status: 'pending' as 'current' | 'pending' | 'completed' | 'failed',
     progress: 0,
     daysLeft: 30,
   });
@@ -192,7 +192,7 @@ const Projects = ({ user, projects: initialProjects }: ProjectsProps) => {
       description: '',
       icon: '📁',
       color: '#0061FF',
-      status: 'pending',
+      status: 'pending' as 'current' | 'pending' | 'completed' | 'failed',
       progress: 0,
       daysLeft: 30,
     });
@@ -333,6 +333,7 @@ const Projects = ({ user, projects: initialProjects }: ProjectsProps) => {
           </TabsContent>
         </Tabs>
         
+        {/* Fix: Properly wrap DialogTrigger inside Dialog component */}
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
@@ -395,7 +396,9 @@ const Projects = ({ user, projects: initialProjects }: ProjectsProps) => {
                 <div className="grid gap-2">
                   <Label htmlFor="project-status">Status</Label>
                   <Select 
-                    onValueChange={(value) => setNewProject({...newProject, status: value})}
+                    onValueChange={(value: 'pending' | 'current' | 'completed' | 'failed') => 
+                      setNewProject({...newProject, status: value})
+                    }
                     defaultValue={newProject.status}
                   >
                     <SelectTrigger id="project-status">
@@ -405,6 +408,7 @@ const Projects = ({ user, projects: initialProjects }: ProjectsProps) => {
                       <SelectItem value="pending">Pending</SelectItem>
                       <SelectItem value="current">Current</SelectItem>
                       <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="failed">Failed</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -429,18 +433,18 @@ const Projects = ({ user, projects: initialProjects }: ProjectsProps) => {
               </Button>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
 
-        <div className="fixed bottom-6 right-6">
-          <DialogTrigger asChild>
-            <button 
-              className="w-12 h-12 bg-app-blue rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-colors"
-              onClick={() => setIsCreateModalOpen(true)}
-            >
-              <Plus />
-            </button>
-          </DialogTrigger>
-        </div>
+          {/* Add the fixed "New Project" button here, properly nested within Dialog */}
+          <div className="fixed bottom-6 right-6">
+            <DialogTrigger asChild>
+              <button 
+                className="w-12 h-12 bg-app-blue rounded-full flex items-center justify-center text-white shadow-lg hover:bg-blue-600 transition-colors"
+              >
+                <Plus />
+              </button>
+            </DialogTrigger>
+          </div>
+        </Dialog>
       </div>
     </div>
   );
