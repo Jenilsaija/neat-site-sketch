@@ -1,11 +1,17 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/Header';
 import KanbanBoard from '@/components/KanbanBoard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Users, Calendar } from 'lucide-react';
+import { Star, Users, Calendar, Plus } from 'lucide-react';
 import { KanbanColumn } from '@/components/KanbanBoard';
 import { tasks } from '@/data/mockData';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import SubTaskCard, { SubTask } from '@/components/SubTaskCard';
+import { toast } from "@/components/ui/use-toast";
 
 interface ProjectDetailsProps {
   user: {
@@ -15,12 +21,15 @@ interface ProjectDetailsProps {
   project: {
     id: string;
     name: string;
-    // Removing the tasks requirement from here since our Project type doesn't have it
-    // We're already using the tasks from the imported mockData
   };
 }
 
 const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
+  const [subtasks, setSubtasks] = useState<SubTask[]>([]);
+  const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
+  const [newSubtask, setNewSubtask] = useState('');
+  const [editingSubtask, setEditingSubtask] = useState<string | null>(null);
+
   // Group tasks by status
   const columns: KanbanColumn[] = [
     {
@@ -45,6 +54,69 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
       tasks: tasks.filter((task) => task.status === 'done'),
     }
   ];
+
+  const handleAddSubtask = () => {
+    if (!newSubtask.trim()) return;
+
+    const subtask: SubTask = {
+      id: `subtask-${Date.now()}`,
+      title: newSubtask,
+      status: 'pending',
+      assignee: user,
+    };
+
+    setSubtasks([...subtasks, subtask]);
+    setNewSubtask('');
+    setIsSubtaskDialogOpen(false);
+    toast({
+      title: "Subtask added",
+      description: "The subtask has been successfully added to the project.",
+    });
+  };
+
+  const handleSubtaskStatusChange = (id: string) => {
+    setSubtasks(subtasks.map(st => 
+      st.id === id 
+        ? { ...st, status: st.status === 'completed' ? 'pending' : 'completed' }
+        : st
+    ));
+  };
+
+  const handleSubtaskEdit = (id: string) => {
+    setEditingSubtask(id);
+    const subtask = subtasks.find(st => st.id === id);
+    if (subtask) {
+      setNewSubtask(subtask.title);
+      setIsSubtaskDialogOpen(true);
+    }
+  };
+
+  const handleSubtaskDelete = (id: string) => {
+    setSubtasks(subtasks.filter(st => st.id !== id));
+    toast({
+      title: "Subtask deleted",
+      description: "The subtask has been successfully removed.",
+    });
+  };
+
+  const handleSubtaskSave = () => {
+    if (editingSubtask) {
+      setSubtasks(subtasks.map(st => 
+        st.id === editingSubtask 
+          ? { ...st, title: newSubtask }
+          : st
+      ));
+      setEditingSubtask(null);
+      toast({
+        title: "Subtask updated",
+        description: "The subtask has been successfully updated.",
+      });
+    } else {
+      handleAddSubtask();
+    }
+    setIsSubtaskDialogOpen(false);
+    setNewSubtask('');
+  };
 
   return (
     <div className="flex-1 p-6">
@@ -76,11 +148,45 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
           <Tabs defaultValue="tasks">
             <TabsList>
               <TabsTrigger value="tasks">Tasks</TabsTrigger>
+              <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
               <TabsTrigger value="people">People</TabsTrigger>
             </TabsList>
             
             <TabsContent value="tasks" className="mt-6">
               <KanbanBoard columns={columns} />
+            </TabsContent>
+            
+            <TabsContent value="subtasks" className="mt-6">
+              <div className="bg-gray-50 rounded-lg p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-lg font-semibold">Subtasks</h3>
+                  <Button onClick={() => {
+                    setEditingSubtask(null);
+                    setNewSubtask('');
+                    setIsSubtaskDialogOpen(true);
+                  }}>
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Subtask
+                  </Button>
+                </div>
+                
+                <div className="space-y-2">
+                  {subtasks.map(subtask => (
+                    <SubTaskCard
+                      key={subtask.id}
+                      subtask={subtask}
+                      onStatusChange={handleSubtaskStatusChange}
+                      onEdit={handleSubtaskEdit}
+                      onDelete={handleSubtaskDelete}
+                    />
+                  ))}
+                  {subtasks.length === 0 && (
+                    <div className="text-center py-8 text-gray-500">
+                      No subtasks yet. Click the button above to add one.
+                    </div>
+                  )}
+                </div>
+              </div>
             </TabsContent>
             
             <TabsContent value="people">
@@ -91,6 +197,36 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
           </Tabs>
         </div>
       </div>
+
+      <Dialog open={isSubtaskDialogOpen} onOpenChange={setIsSubtaskDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingSubtask ? 'Edit Subtask' : 'Add New Subtask'}</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="subtask-title">Subtask Title</Label>
+            <Input
+              id="subtask-title"
+              value={newSubtask}
+              onChange={(e) => setNewSubtask(e.target.value)}
+              placeholder="Enter subtask title"
+              className="mt-2"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setIsSubtaskDialogOpen(false);
+              setNewSubtask('');
+              setEditingSubtask(null);
+            }}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubtaskSave} disabled={!newSubtask.trim()}>
+              {editingSubtask ? 'Save Changes' : 'Add Subtask'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
