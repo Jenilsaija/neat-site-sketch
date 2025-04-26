@@ -3,13 +3,14 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import KanbanBoard from '@/components/KanbanBoard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Star, Users, Calendar, Plus } from 'lucide-react';
+import { Star, Users, Calendar, Plus, AlertCircle } from 'lucide-react';
 import { KanbanColumn } from '@/components/KanbanBoard';
 import { tasks } from '@/data/mockData';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import SubTaskCard, { SubTask } from '@/components/SubTaskCard';
 import { toast } from "@/components/ui/use-toast";
 
@@ -29,6 +30,8 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
   const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
   const [newSubtask, setNewSubtask] = useState('');
   const [editingSubtask, setEditingSubtask] = useState<string | null>(null);
+  const [subtaskPriority, setSubtaskPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
+  const [subtaskDueDate, setSubtaskDueDate] = useState('');
 
   // Group tasks by status
   const columns: KanbanColumn[] = [
@@ -63,10 +66,14 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
       title: newSubtask,
       status: 'pending',
       assignee: user,
+      priority: subtaskPriority,
+      dueDate: subtaskDueDate || undefined,
     };
 
     setSubtasks([...subtasks, subtask]);
     setNewSubtask('');
+    setSubtaskPriority('medium');
+    setSubtaskDueDate('');
     setIsSubtaskDialogOpen(false);
     toast({
       title: "Subtask added",
@@ -87,6 +94,8 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
     const subtask = subtasks.find(st => st.id === id);
     if (subtask) {
       setNewSubtask(subtask.title);
+      setSubtaskPriority(subtask.priority || 'medium');
+      setSubtaskDueDate(subtask.dueDate || '');
       setIsSubtaskDialogOpen(true);
     }
   };
@@ -103,7 +112,12 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
     if (editingSubtask) {
       setSubtasks(subtasks.map(st => 
         st.id === editingSubtask 
-          ? { ...st, title: newSubtask }
+          ? { 
+              ...st, 
+              title: newSubtask,
+              priority: subtaskPriority,
+              dueDate: subtaskDueDate || undefined
+            }
           : st
       ));
       setEditingSubtask(null);
@@ -116,6 +130,15 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
     }
     setIsSubtaskDialogOpen(false);
     setNewSubtask('');
+    setSubtaskPriority('medium');
+    setSubtaskDueDate('');
+  };
+
+  const resetForm = () => {
+    setNewSubtask('');
+    setSubtaskPriority('medium');
+    setSubtaskDueDate('');
+    setEditingSubtask(null);
   };
 
   return (
@@ -161,8 +184,7 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-lg font-semibold">Subtasks</h3>
                   <Button onClick={() => {
-                    setEditingSubtask(null);
-                    setNewSubtask('');
+                    resetForm();
                     setIsSubtaskDialogOpen(true);
                   }}>
                     <Plus className="h-4 w-4 mr-2" />
@@ -198,26 +220,56 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
         </div>
       </div>
 
-      <Dialog open={isSubtaskDialogOpen} onOpenChange={setIsSubtaskDialogOpen}>
+      <Dialog open={isSubtaskDialogOpen} onOpenChange={(open) => {
+        if (!open) resetForm();
+        setIsSubtaskDialogOpen(open);
+      }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{editingSubtask ? 'Edit Subtask' : 'Add New Subtask'}</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <Label htmlFor="subtask-title">Subtask Title</Label>
-            <Input
-              id="subtask-title"
-              value={newSubtask}
-              onChange={(e) => setNewSubtask(e.target.value)}
-              placeholder="Enter subtask title"
-              className="mt-2"
-            />
+          <div className="space-y-4 py-4">
+            <div>
+              <Label htmlFor="subtask-title">Subtask Title</Label>
+              <Input
+                id="subtask-title"
+                value={newSubtask}
+                onChange={(e) => setNewSubtask(e.target.value)}
+                placeholder="Enter subtask title"
+                className="mt-2"
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="subtask-priority">Priority</Label>
+              <Select value={subtaskPriority} onValueChange={(value: any) => setSubtaskPriority(value)}>
+                <SelectTrigger id="subtask-priority" className="mt-2">
+                  <SelectValue placeholder="Select priority" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="urgent">Urgent</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label htmlFor="subtask-duedate">Due Date (Optional)</Label>
+              <Input
+                id="subtask-duedate"
+                type="date"
+                value={subtaskDueDate}
+                onChange={(e) => setSubtaskDueDate(e.target.value)}
+                className="mt-2"
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => {
+              resetForm();
               setIsSubtaskDialogOpen(false);
-              setNewSubtask('');
-              setEditingSubtask(null);
             }}>
               Cancel
             </Button>

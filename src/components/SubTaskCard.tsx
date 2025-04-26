@@ -2,12 +2,15 @@
 import React from 'react';
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Check, Edit, Trash2 } from 'lucide-react';
+import { Check, Edit, Trash2, Calendar, AlertCircle } from 'lucide-react';
+import { format } from 'date-fns';
 
 export interface SubTask {
   id: string;
   title: string;
   status: 'pending' | 'completed';
+  priority?: 'low' | 'medium' | 'high' | 'urgent';
+  dueDate?: string;
   assignee?: {
     name: string;
     avatar: string;
@@ -22,8 +25,27 @@ interface SubTaskCardProps {
 }
 
 const SubTaskCard = ({ subtask, onStatusChange, onEdit, onDelete }: SubTaskCardProps) => {
+  // Helper function to get priority badge variant
+  const getPriorityVariant = (priority?: string) => {
+    switch (priority) {
+      case 'low': return 'outline';
+      case 'medium': return 'secondary';
+      case 'high': return 'default';
+      case 'urgent': return 'destructive';
+      default: return 'outline';
+    }
+  };
+
+  // Helper function to get priority icon
+  const getPriorityIcon = (priority?: string) => {
+    if (priority === 'high' || priority === 'urgent') {
+      return <AlertCircle className="h-3 w-3 mr-1" />;
+    }
+    return null;
+  };
+
   return (
-    <div className="flex items-center justify-between p-3 bg-white rounded-lg border mb-2">
+    <div className="flex items-center justify-between p-3 bg-white rounded-lg border mb-2 hover:shadow-sm transition-shadow">
       <div className="flex items-center gap-3">
         <Button 
           variant="ghost" 
@@ -51,6 +73,20 @@ const SubTaskCard = ({ subtask, onStatusChange, onEdit, onDelete }: SubTaskCardP
       </div>
       
       <div className="flex items-center gap-2">
+        {subtask.dueDate && (
+          <div className="flex items-center text-xs text-gray-500 mr-2">
+            <Calendar size={12} className="mr-1" />
+            <span>{subtask.dueDate}</span>
+          </div>
+        )}
+        
+        {subtask.priority && (
+          <Badge variant={getPriorityVariant(subtask.priority)} className="mr-1 flex items-center">
+            {getPriorityIcon(subtask.priority)}
+            <span className="capitalize">{subtask.priority}</span>
+          </Badge>
+        )}
+        
         <Badge variant={subtask.status === 'completed' ? 'success' : 'secondary'}>
           {subtask.status}
         </Badge>
