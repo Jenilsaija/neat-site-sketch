@@ -12,16 +12,42 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Github, Mail } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 type AuthFormProps = {
   mode: "login" | "register" | "forgot-password";
 };
 
 const AuthForm = ({ mode }: AuthFormProps) => {
-  const form = useForm();
+  // Create validation schema based on mode
+  const formSchema = z.object({
+    ...(mode === "register" ? { name: z.string().min(2, "Name is required") } : {}),
+    ...(mode !== "forgot-password" ? { 
+      email: z.string().email("Invalid email address"),
+      password: z.string().min(8, "Password must be at least 8 characters")
+    } : {
+      email: z.string().email("Invalid email address")
+    }),
+  });
+
+  // Define form with validation
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      ...(mode === "register" ? { name: "" } : {}),
+      email: "",
+      ...(mode !== "forgot-password" ? { password: "" } : {})
+    },
+  });
+
+  const onSubmit = (values: any) => {
+    console.log(values);
+    // In a real implementation, this would connect to authentication APIs
+  };
 
   return (
-    <div className="w-full max-w-md space-y-8">
+    <div className="w-full space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold">
           {mode === "login" ? "Welcome back" : mode === "register" ? "Create an account" : "Reset password"}
@@ -36,7 +62,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
       </div>
 
       <Form {...form}>
-        <form className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           {mode !== "forgot-password" && (
             <>
               {mode === "register" && (
@@ -117,11 +143,11 @@ const AuthForm = ({ mode }: AuthFormProps) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" type="button" className="w-full">
               <Github className="mr-2 h-4 w-4" />
               GitHub
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" type="button" className="w-full">
               <Mail className="mr-2 h-4 w-4" />
               Google
             </Button>

@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 
 const Register = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gray-50">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-background">
+      <div className="w-full max-w-md space-y-4">
         <AuthForm mode="register" />
         <p className="mt-4 text-center text-sm text-muted-foreground">
           Already have an account?{" "}
