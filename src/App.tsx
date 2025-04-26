@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
@@ -20,7 +21,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   // Simulate authenticated state
-  const isAuthenticated = true;
+  const isAuthenticated = false; // Changed to false to show auth pages
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -37,49 +38,71 @@ const App = () => {
                 <Route path="*" element={<Navigate to="/auth/login" replace />} />
               </>
             ) : (
-              <Route element={
-                <div className="flex min-h-screen">
-                  <Sidebar />
-                  <div className="flex-1 ml-16">
-                    <Routes>
-                      <Route path="/" element={
-                        <Dashboard 
-                          user={currentUser}
-                          stats={dashboardData.stats} 
-                          taskCompletionData={dashboardData.taskCompletionData}
-                          activities={dashboardData.activities}
-                        />
-                      } />
-                      <Route path="/projects" element={
-                        <Projects 
-                          user={currentUser} 
-                          projects={projects} 
-                        />
-                      } />
-                      <Route path="/team" element={
-                        <Team 
-                          user={currentUser} 
-                          members={teamMembers} 
-                        />
-                      } />
-                      <Route path="/projects/:id" element={
-                        <ProjectDetails
-                          user={currentUser}
-                          project={projects[0]}
-                        />
-                      } />
-                      <Route path="/messages" element={
-                        <Messages />
-                      } />
-                      <Route path="/profile" element={
-                        <Profile user={currentUser} />
-                      } />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
+              <>
+                <Route path="/" element={
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <div className="flex-1 ml-16">
+                      <Dashboard 
+                        user={currentUser}
+                        stats={dashboardData.stats} 
+                        taskCompletionData={dashboardData.taskCompletionData}
+                        activities={dashboardData.activities}
+                      />
+                    </div>
                   </div>
-                </div>
-              }>
-              </Route>
+                } />
+                <Route path="/projects" element={
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <div className="flex-1 ml-16">
+                      <Projects 
+                        user={currentUser} 
+                        projects={projects} 
+                      />
+                    </div>
+                  </div>
+                } />
+                <Route path="/team" element={
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <div className="flex-1 ml-16">
+                      <Team 
+                        user={currentUser} 
+                        members={teamMembers} 
+                      />
+                    </div>
+                  </div>
+                } />
+                <Route path="/projects/:id" element={
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <div className="flex-1 ml-16">
+                      <ProjectDetails
+                        user={currentUser}
+                        project={projects[0]}
+                      />
+                    </div>
+                  </div>
+                } />
+                <Route path="/messages" element={
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <div className="flex-1 ml-16">
+                      <Messages />
+                    </div>
+                  </div>
+                } />
+                <Route path="/profile" element={
+                  <div className="flex min-h-screen">
+                    <Sidebar />
+                    <div className="flex-1 ml-16">
+                      <Profile user={currentUser} />
+                    </div>
+                  </div>
+                } />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </>
             )}
           </Routes>
         </BrowserRouter>
