@@ -22,7 +22,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   // Simulate authenticated state
-  const isAuthenticated = false; // Using false to show auth pages
+  const isAuthenticated = true; // Using false to show auth pages
   const isMobile = useIsMobile();
 
   return (
