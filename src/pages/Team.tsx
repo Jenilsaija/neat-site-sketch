@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import TeamMember from '@/components/TeamMember';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TeamMember as TeamMemberType } from '@/data/mockData';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TeamProps {
   user: {
@@ -14,8 +15,10 @@ interface TeamProps {
 }
 
 const Team = ({ user, members }: TeamProps) => {
+  const isMobile = useIsMobile();
+
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-4 md:p-6">
       <Header 
         title="Team" 
         user={user} 
@@ -24,24 +27,24 @@ const Team = ({ user, members }: TeamProps) => {
       
       <div className="mt-6">
         <Tabs defaultValue="all">
-          <div className="flex justify-between items-center mb-6">
-            <TabsList>
-              <TabsTrigger value="all">ALL ({members.length})</TabsTrigger>
-              <TabsTrigger value="in-house">IN-HOUSE ({members.filter(m => m.type === 'in-house').length})</TabsTrigger>
-              <TabsTrigger value="remote">REMOTE ({members.filter(m => m.type === 'remote').length})</TabsTrigger>
+          <div className={`flex ${isMobile ? 'flex-col gap-3' : 'justify-between items-center'} mb-6`}>
+            <TabsList className={`${isMobile ? 'w-full' : ''}`}>
+              <TabsTrigger value="all" className="text-xs md:text-sm">ALL ({members.length})</TabsTrigger>
+              <TabsTrigger value="in-house" className="text-xs md:text-sm">IN-HOUSE ({members.filter(m => m.type === 'in-house').length})</TabsTrigger>
+              <TabsTrigger value="remote" className="text-xs md:text-sm">REMOTE ({members.filter(m => m.type === 'remote').length})</TabsTrigger>
             </TabsList>
             
-            <div className="flex gap-3">
+            <div className="flex gap-3 w-full md:w-auto">
               <input 
                 type="text" 
                 placeholder="Search a member" 
-                className="px-4 py-2 border border-border rounded-lg text-sm"
+                className="px-4 py-2 border border-border rounded-lg text-sm w-full md:w-auto"
               />
             </div>
           </div>
           
           <TabsContent value="all">
-            <div className="grid grid-cols-4 gap-6">
+            <div className={`grid ${isMobile ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-4 md:gap-6`}>
               {members.map((member) => (
                 <TeamMember key={member.id} {...member} />
               ))}
@@ -49,7 +52,7 @@ const Team = ({ user, members }: TeamProps) => {
           </TabsContent>
           
           <TabsContent value="in-house">
-            <div className="grid grid-cols-4 gap-6">
+            <div className={`grid ${isMobile ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-4 md:gap-6`}>
               {members
                 .filter(m => m.type === 'in-house')
                 .map((member) => (
@@ -60,7 +63,7 @@ const Team = ({ user, members }: TeamProps) => {
           </TabsContent>
           
           <TabsContent value="remote">
-            <div className="grid grid-cols-4 gap-6">
+            <div className={`grid ${isMobile ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'} gap-4 md:gap-6`}>
               {members
                 .filter(m => m.type === 'remote')
                 .map((member) => (

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Mail, Phone, MapPin, Camera } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface ProfilePageProps {
   user: {
@@ -20,6 +21,7 @@ interface ProfilePageProps {
 }
 
 const ProfilePage = ({ user }: ProfilePageProps) => {
+  const isMobile = useIsMobile();
   const initials = user.name
     .split(" ")
     .map((n) => n[0])
@@ -27,24 +29,24 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
     .toUpperCase();
 
   return (
-    <div className="container max-w-4xl py-8">
-      <h1 className="text-3xl font-bold mb-8">Profile Settings</h1>
+    <div className="container p-4 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">Profile Settings</h1>
       
-      <div className="grid gap-8">
+      <div className="grid gap-6 md:gap-8">
         <Card>
-          <CardHeader className="flex-row items-center gap-4 space-y-0">
-            <div className="relative">
-              <Avatar className="h-20 w-20">
+          <CardHeader className={`flex-row items-center ${isMobile ? 'flex-wrap' : 'gap-4'} space-y-0`}>
+            <div className="relative mb-2 md:mb-0">
+              <Avatar className={`${isMobile ? 'h-16 w-16' : 'h-20 w-20'}`}>
                 <AvatarImage src={user.avatar} alt={user.name} />
                 <AvatarFallback>{initials}</AvatarFallback>
               </Avatar>
               <Button size="icon" variant="outline" className="absolute -bottom-2 -right-2 rounded-full">
-                <Camera className="h-4 w-4" />
+                <Camera className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
             </div>
             <div>
-              <h2 className="text-2xl font-semibold">{user.name}</h2>
-              {user.role && <p className="text-muted-foreground">{user.role}</p>}
+              <h2 className="text-xl md:text-2xl font-semibold">{user.name}</h2>
+              {user.role && <p className="text-muted-foreground text-sm md:text-base">{user.role}</p>}
             </div>
           </CardHeader>
         </Card>
@@ -87,8 +89,8 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
               </div>
             </div>
             
-            <div className="flex justify-end">
-              <Button>Save Changes</Button>
+            <div className={`flex ${isMobile ? 'justify-center' : 'justify-end'}`}>
+              <Button className={`${isMobile ? 'w-full md:w-auto' : ''}`}>Save Changes</Button>
             </div>
           </CardContent>
         </Card>

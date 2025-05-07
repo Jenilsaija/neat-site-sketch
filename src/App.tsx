@@ -42,9 +42,9 @@ const App = () => {
             ) : (
               <>
                 <Route path="/" element={
-                  <div className="flex min-h-screen">
+                  <div className="flex min-h-screen flex-col md:flex-row">
                     <Sidebar />
-                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <Dashboard 
                         user={currentUser}
                         stats={dashboardData.stats} 
@@ -55,9 +55,9 @@ const App = () => {
                   </div>
                 } />
                 <Route path="/projects" element={
-                  <div className="flex min-h-screen">
+                  <div className="flex min-h-screen flex-col md:flex-row">
                     <Sidebar />
-                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <Projects 
                         user={currentUser} 
                         projects={projects} 
@@ -66,9 +66,9 @@ const App = () => {
                   </div>
                 } />
                 <Route path="/team" element={
-                  <div className="flex min-h-screen">
+                  <div className="flex min-h-screen flex-col md:flex-row">
                     <Sidebar />
-                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <Team 
                         user={currentUser} 
                         members={teamMembers} 
@@ -77,9 +77,9 @@ const App = () => {
                   </div>
                 } />
                 <Route path="/projects/:id" element={
-                  <div className="flex min-h-screen">
+                  <div className="flex min-h-screen flex-col md:flex-row">
                     <Sidebar />
-                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <ProjectDetails
                         user={currentUser}
                         project={projects[0]}
@@ -88,17 +88,17 @@ const App = () => {
                   </div>
                 } />
                 <Route path="/messages" element={
-                  <div className="flex min-h-screen">
+                  <div className="flex min-h-screen flex-col md:flex-row">
                     <Sidebar />
-                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <Messages />
                     </div>
                   </div>
                 } />
                 <Route path="/profile" element={
-                  <div className="flex min-h-screen">
+                  <div className="flex min-h-screen flex-col md:flex-row">
                     <Sidebar />
-                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <Profile user={currentUser} />
                     </div>
                   </div>

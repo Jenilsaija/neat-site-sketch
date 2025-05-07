@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Grid2x2, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Activity } from '@/data/mockData';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DashboardProps {
   user: {
@@ -22,8 +23,10 @@ interface DashboardProps {
 }
 
 const Dashboard = ({ user, stats, taskCompletionData, activities }: DashboardProps) => {
+  const isMobile = useIsMobile();
+  
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-4 md:p-6">
       <Header 
         title="Dashboard" 
         user={user} 
@@ -33,7 +36,7 @@ const Dashboard = ({ user, stats, taskCompletionData, activities }: DashboardPro
       <div className="mt-6">
         <h2 className="font-semibold mb-4 text-gray-800">PROJECTS OVERVIEW</h2>
         
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-2 md:grid-cols-4 gap-4'} mb-8`}>
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -91,14 +94,14 @@ const Dashboard = ({ user, stats, taskCompletionData, activities }: DashboardPro
           </Card>
         </div>
         
-        <div className="grid grid-cols-3 gap-6">
-          <div className="col-span-2">
+        <div className={`grid ${isMobile ? 'grid-cols-1 gap-4' : 'grid-cols-1 md:grid-cols-3 gap-6'}`}>
+          <div className={`${isMobile ? '' : 'col-span-2'}`}>
             <Card>
               <CardHeader>
                 <CardTitle className="text-base font-medium">TASKS COMPLETION</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-64">
+                <div className={`${isMobile ? 'h-48' : 'h-64'}`}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={taskCompletionData}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
