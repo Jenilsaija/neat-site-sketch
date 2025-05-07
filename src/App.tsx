@@ -21,7 +21,7 @@ const queryClient = new QueryClient();
 
 const App = () => {
   // Simulate authenticated state
-  const isAuthenticated = false; // Changed to false to show auth pages
+  const isAuthenticated = true; // Changed to false to show auth pages
 
   return (
     <QueryClientProvider client={queryClient}>
