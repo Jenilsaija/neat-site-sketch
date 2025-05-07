@@ -14,12 +14,15 @@ import {
 import { Github, Mail } from "lucide-react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type AuthFormProps = {
   mode: "login" | "register" | "forgot-password";
 };
 
 const AuthForm = ({ mode }: AuthFormProps) => {
+  const isMobile = useIsMobile();
+  
   // Create validation schema based on mode
   const formSchema = z.object({
     ...(mode === "register" ? { name: z.string().min(2, "Name is required") } : {}),
@@ -49,10 +52,10 @@ const AuthForm = ({ mode }: AuthFormProps) => {
   return (
     <div className="w-full space-y-6">
       <div className="text-center">
-        <h2 className="text-2xl font-bold">
+        <h2 className={`${isMobile ? 'text-xl' : 'text-2xl'} font-bold`}>
           {mode === "login" ? "Welcome back" : mode === "register" ? "Create an account" : "Reset password"}
         </h2>
-        <p className="text-muted-foreground mt-2">
+        <p className="text-muted-foreground mt-2 text-sm">
           {mode === "login" 
             ? "Enter your credentials to access your account" 
             : mode === "register" 
@@ -125,7 +128,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
             />
           )}
 
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full mt-2">
             {mode === "login" ? "Sign in" : mode === "register" ? "Sign up" : "Reset password"}
           </Button>
         </form>
@@ -142,7 +145,7 @@ const AuthForm = ({ mode }: AuthFormProps) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className={`grid ${isMobile ? 'grid-cols-1 gap-3' : 'grid-cols-2 gap-4'}`}>
             <Button variant="outline" type="button" className="w-full">
               <Github className="mr-2 h-4 w-4" />
               GitHub

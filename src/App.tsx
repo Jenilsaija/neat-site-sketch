@@ -16,12 +16,14 @@ import NotFound from "./pages/NotFound";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
+import { useIsMobile } from "./hooks/use-mobile";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   // Simulate authenticated state
-  const isAuthenticated = true; // Changed to false to show auth pages
+  const isAuthenticated = false; // Using false to show auth pages
+  const isMobile = useIsMobile();
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -42,7 +44,7 @@ const App = () => {
                 <Route path="/" element={
                   <div className="flex min-h-screen">
                     <Sidebar />
-                    <div className="flex-1 ml-16">
+                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
                       <Dashboard 
                         user={currentUser}
                         stats={dashboardData.stats} 
@@ -55,7 +57,7 @@ const App = () => {
                 <Route path="/projects" element={
                   <div className="flex min-h-screen">
                     <Sidebar />
-                    <div className="flex-1 ml-16">
+                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
                       <Projects 
                         user={currentUser} 
                         projects={projects} 
@@ -66,7 +68,7 @@ const App = () => {
                 <Route path="/team" element={
                   <div className="flex min-h-screen">
                     <Sidebar />
-                    <div className="flex-1 ml-16">
+                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
                       <Team 
                         user={currentUser} 
                         members={teamMembers} 
@@ -77,7 +79,7 @@ const App = () => {
                 <Route path="/projects/:id" element={
                   <div className="flex min-h-screen">
                     <Sidebar />
-                    <div className="flex-1 ml-16">
+                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
                       <ProjectDetails
                         user={currentUser}
                         project={projects[0]}
@@ -88,7 +90,7 @@ const App = () => {
                 <Route path="/messages" element={
                   <div className="flex min-h-screen">
                     <Sidebar />
-                    <div className="flex-1 ml-16">
+                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
                       <Messages />
                     </div>
                   </div>
@@ -96,7 +98,7 @@ const App = () => {
                 <Route path="/profile" element={
                   <div className="flex min-h-screen">
                     <Sidebar />
-                    <div className="flex-1 ml-16">
+                    <div className={`flex-1 ${isMobile ? '' : 'ml-16'}`}>
                       <Profile user={currentUser} />
                     </div>
                   </div>
