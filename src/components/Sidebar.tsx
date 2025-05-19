@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Home, 
   Grid2x2, 
@@ -13,9 +13,11 @@ import {
 } from 'lucide-react';
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  
   return (
     <div className="h-screen w-16 bg-app-blue flex flex-col items-center py-6 fixed left-0 top-0">
-      <div className="mb-8">
+      <div className="mb-8 cursor-pointer" onClick={() => navigate('/projects')}>
         <div className="w-10 h-10 bg-white rounded flex items-center justify-center">
           <div className="w-6 h-6 bg-app-blue rounded"></div>
         </div>

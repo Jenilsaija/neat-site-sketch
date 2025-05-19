@@ -20,6 +20,8 @@ import SubTaskCard, { SubTask } from '@/components/SubTaskCard';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import TaskComments from '@/components/TaskComments';
 
+type TaskStatus = 'todo' | 'in-progress' | 'in-review' | 'done';
+
 // Find the task using URL parameter
 const TaskPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +30,7 @@ const TaskPage = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [taskTitle, setTaskTitle] = useState(task.title || '');
   const [taskDescription, setTaskDescription] = useState(task.description || '');
-  const [taskStatus, setTaskStatus] = useState(task.status || 'todo');
+  const [taskStatus, setTaskStatus] = useState<TaskStatus>((task.status as TaskStatus) || 'todo');
   const [taskPriority, setTaskPriority] = useState(task.priority || 'medium');
   const [taskDueDate, setTaskDueDate] = useState(task.dueDate || '');
   const [assignees, setAssignees] = useState(task.assignees || []);
@@ -72,7 +74,7 @@ const TaskPage = () => {
   const [subtaskDueDate, setSubtaskDueDate] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const handleStatusChange = (status: string) => {
+  const handleStatusChange = (status: TaskStatus) => {
     setTaskStatus(status);
     toast({
       title: "Status updated",
@@ -238,7 +240,10 @@ const TaskPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="task-status">Status</Label>
-                <Select value={taskStatus} onValueChange={setTaskStatus}>
+                <Select 
+                  value={taskStatus} 
+                  onValueChange={(value: TaskStatus) => setTaskStatus(value)}
+                >
                   <SelectTrigger id="task-status" className="mt-1">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
@@ -284,9 +289,9 @@ const TaskPage = () => {
                     <SelectValue placeholder="Select assignee" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={currentUser.id}>{currentUser.name}</SelectItem>
+                    <SelectItem value={currentUser.id || "current-user"}>{currentUser.name}</SelectItem>
                     {teamMembers.map(member => (
-                      <SelectItem key={member.id} value={member.id}>
+                      <SelectItem key={member.id || `member-${member.name}`} value={member.id || `member-${member.name}`}>
                         {member.name}
                       </SelectItem>
                     ))}
@@ -337,7 +342,7 @@ const TaskPage = () => {
                     </div>
                   )}
                   
-                  {task.attachmentCount > 0 && (
+                  {task.attachmentCount && task.attachmentCount > 0 && (
                     <div className="flex items-center">
                       <Paperclip size={16} className="mr-1" />
                       <span>{task.attachmentCount} attachments</span>
@@ -495,7 +500,10 @@ const TaskPage = () => {
                   <CardContent className="space-y-4">
                     <div>
                       <h4 className="text-sm font-medium text-gray-500">Status</h4>
-                      <Select value={taskStatus} onValueChange={handleStatusChange}>
+                      <Select 
+                        value={taskStatus} 
+                        onValueChange={(value: TaskStatus) => handleStatusChange(value)}
+                      >
                         <SelectTrigger className="mt-1">
                           <SelectValue placeholder="Select status" />
                         </SelectTrigger>

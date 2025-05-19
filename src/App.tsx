@@ -16,6 +16,7 @@ import TaskPage from "./pages/TaskPage";
 import NotFound from "./pages/NotFound";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
 import { useIsMobile } from "./hooks/use-mobile";
 
@@ -109,6 +110,14 @@ const App = () => {
                     <Sidebar />
                     <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
                       <Profile user={currentUser} />
+                    </div>
+                  </div>
+                } />
+                <Route path="/settings" element={
+                  <div className="flex min-h-screen flex-col md:flex-row">
+                    <Sidebar />
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
+                      <Settings />
                     </div>
                   </div>
                 } />
