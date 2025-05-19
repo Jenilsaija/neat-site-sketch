@@ -1,56 +1,128 @@
 
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  Grid2x2, 
-  Users, 
-  FileText, 
+  LayoutDashboard, 
+  Folder, 
   MessageSquare, 
-  Clock, 
+  Users, 
   Settings, 
-  MoreVertical 
+  ChevronLeft, 
+  ChevronRight,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from '@/hooks/use-theme';
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [collapsed, setCollapsed] = useState(false);
+  const { theme, setTheme } = useTheme();
+  
+  const menuItems = [
+    { icon: Home, label: 'Dashboard', path: '/' },
+    { icon: Folder, label: 'Projects', path: '/projects' },
+    { icon: MessageSquare, label: 'Messages', path: '/messages' },
+    { icon: Users, label: 'Team', path: '/team' },
+    { icon: Settings, label: 'Settings', path: '/settings' },
+  ];
+
+  const isActive = (path) => {
+    return location.pathname === path || 
+           (path !== '/' && location.pathname.startsWith(path));
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
+  };
   
   return (
-    <div className="h-screen w-16 bg-app-blue flex flex-col items-center py-6 fixed left-0 top-0">
-      <div className="mb-8 cursor-pointer" onClick={() => navigate('/projects')}>
-        <div className="w-10 h-10 bg-white rounded flex items-center justify-center">
-          <div className="w-6 h-6 bg-app-blue rounded"></div>
+    <div 
+      className={`h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 ${
+        collapsed ? 'w-[4.5rem]' : 'w-64'
+      } fixed left-0 top-0 z-10`}
+    >
+      <div className="flex items-center px-4 h-16 border-b border-sidebar-border">
+        {!collapsed && (
+          <div 
+            className="flex items-center gap-2 cursor-pointer" 
+            onClick={() => navigate('/')}
+          >
+            <div className="w-8 h-8 bg-sidebar-primary rounded flex items-center justify-center">
+              <LayoutDashboard size={16} className="text-sidebar-primary-foreground" />
+            </div>
+            <span className="font-semibold text-lg">TaskFlow</span>
+          </div>
+        )}
+        {collapsed && (
+          <div 
+            className="w-full flex justify-center cursor-pointer" 
+            onClick={() => navigate('/')}
+          >
+            <div className="w-8 h-8 bg-sidebar-primary rounded flex items-center justify-center">
+              <LayoutDashboard size={16} className="text-sidebar-primary-foreground" />
+            </div>
+          </div>
+        )}
+      </div>
+      
+      <div className="flex-1 overflow-y-auto py-6">
+        <nav className="px-3 space-y-1">
+          {menuItems.map((item) => (
+            <TooltipProvider key={item.path} delayDuration={300}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    to={item.path}
+                    className={`flex items-center px-3 py-2.5 rounded-md transition-all ${
+                      isActive(item.path)
+                        ? 'bg-sidebar-accent text-sidebar-accent-foreground'
+                        : 'hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground'
+                    }`}
+                  >
+                    <item.icon size={collapsed ? 20 : 18} className="shrink-0" />
+                    {!collapsed && <span className="ml-3 truncate">{item.label}</span>}
+                  </Link>
+                </TooltipTrigger>
+                {collapsed && <TooltipContent side="right">{item.label}</TooltipContent>}
+              </Tooltip>
+            </TooltipProvider>
+          ))}
+        </nav>
+      </div>
+      
+      <div className="p-4 border-t border-sidebar-border">
+        <div className="flex items-center justify-between">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleTheme}
+            className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            {theme === 'light' ? (
+              <Moon size={20} />
+            ) : (
+              <Sun size={20} />
+            )}
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+          >
+            {collapsed ? (
+              <ChevronRight size={20} />
+            ) : (
+              <ChevronLeft size={20} />
+            )}
+          </Button>
         </div>
-      </div>
-      
-      <div className="flex flex-col gap-6 items-center">
-        <Link to="/" className="text-white p-2 rounded-md hover:bg-white/10">
-          <Home size={20} />
-        </Link>
-        <Link to="/projects" className="text-white p-2 rounded-md hover:bg-white/10">
-          <Grid2x2 size={20} />
-        </Link>
-        <Link to="/files" className="text-white p-2 rounded-md hover:bg-white/10">
-          <FileText size={20} />
-        </Link>
-        <Link to="/messages" className="text-white p-2 rounded-md hover:bg-white/10">
-          <MessageSquare size={20} />
-        </Link>
-        <Link to="/history" className="text-white p-2 rounded-md hover:bg-white/10">
-          <Clock size={20} />
-        </Link>
-        <Link to="/team" className="text-white p-2 rounded-md hover:bg-white/10">
-          <Users size={20} />
-        </Link>
-      </div>
-      
-      <div className="mt-auto flex flex-col gap-6 items-center">
-        <Link to="/settings" className="text-white p-2 rounded-md hover:bg-white/10">
-          <Settings size={20} />
-        </Link>
-        <button className="text-white p-2 rounded-md hover:bg-white/10">
-          <MoreVertical size={20} />
-        </button>
       </div>
     </div>
   );

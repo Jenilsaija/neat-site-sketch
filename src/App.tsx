@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
 import { useIsMobile } from "./hooks/use-mobile";
+import { ThemeProvider } from "./hooks/use-theme";
 
 const queryClient = new QueryClient();
 
@@ -29,104 +30,106 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {!isAuthenticated ? (
-              <>
-                <Route path="/auth/login" element={<Login />} />
-                <Route path="/auth/register" element={<Register />} />
-                <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-                <Route path="*" element={<Navigate to="/auth/login" replace />} />
-              </>
-            ) : (
-              <>
-                <Route path="/" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <Dashboard 
-                        user={currentUser}
-                        stats={dashboardData.stats} 
-                        taskCompletionData={dashboardData.taskCompletionData}
-                        activities={dashboardData.activities}
-                      />
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {!isAuthenticated ? (
+                <>
+                  <Route path="/auth/login" element={<Login />} />
+                  <Route path="/auth/register" element={<Register />} />
+                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                  <Route path="*" element={<Navigate to="/auth/login" replace />} />
+                </>
+              ) : (
+                <>
+                  <Route path="/" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <Dashboard 
+                          user={currentUser}
+                          stats={dashboardData.stats} 
+                          taskCompletionData={dashboardData.taskCompletionData}
+                          activities={dashboardData.activities}
+                        />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/projects" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <Projects 
-                        user={currentUser} 
-                        projects={projects} 
-                      />
+                  } />
+                  <Route path="/projects" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <Projects 
+                          user={currentUser} 
+                          projects={projects} 
+                        />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/team" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <Team 
-                        user={currentUser} 
-                        members={teamMembers} 
-                      />
+                  } />
+                  <Route path="/team" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <Team 
+                          user={currentUser} 
+                          members={teamMembers} 
+                        />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/projects/:id" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <ProjectDetails
-                        user={currentUser}
-                        project={projects[0]}
-                      />
+                  } />
+                  <Route path="/projects/:id" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <ProjectDetails
+                          user={currentUser}
+                          project={projects[0]}
+                        />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/tasks/:id" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <TaskPage />
+                  } />
+                  <Route path="/tasks/:id" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <TaskPage />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/messages" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <Messages />
+                  } />
+                  <Route path="/messages" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <Messages />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/profile" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <Profile user={currentUser} />
+                  } />
+                  <Route path="/profile" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <Profile user={currentUser} />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="/settings" element={
-                  <div className="flex min-h-screen flex-col md:flex-row">
-                    <Sidebar />
-                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
-                      <Settings />
+                  } />
+                  <Route path="/settings" element={
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                      <Sidebar />
+                      <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16 lg:ml-64'} transition-all duration-300`}>
+                        <Settings />
+                      </div>
                     </div>
-                  </div>
-                } />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </>
-            )}
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+                  } />
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </>
+              )}
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
