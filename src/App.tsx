@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import Team from "./pages/Team";
 import ProjectDetails from "./pages/ProjectDetails";
+import TaskPage from "./pages/TaskPage";
 import NotFound from "./pages/NotFound";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
@@ -84,6 +85,14 @@ const App = () => {
                         user={currentUser}
                         project={projects[0]}
                       />
+                    </div>
+                  </div>
+                } />
+                <Route path="/tasks/:id" element={
+                  <div className="flex min-h-screen flex-col md:flex-row">
+                    <Sidebar />
+                    <div className={`flex-1 ${isMobile ? 'w-full' : 'md:ml-16'}`}>
+                      <TaskPage />
                     </div>
                   </div>
                 } />
