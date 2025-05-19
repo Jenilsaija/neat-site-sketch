@@ -1,654 +1,468 @@
 
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { format } from 'date-fns';
-import Header from '@/components/Header';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calendar as CalendarIcon, Clock, AlertCircle, MessageSquare, Paperclip, Tag, CheckCircle, Edit, Trash2 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Edit, ChevronDown, Check, Clipboard, MessageSquare, Clock, Calendar, Users, Activity } from 'lucide-react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/components/ui/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { tasks, currentUser, teamMembers } from '@/data/mockData';
-import SubTaskCard, { SubTask } from '@/components/SubTaskCard';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import TaskComments from '@/components/TaskComments';
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import TaskComments from "@/components/TaskComments";
 
-type TaskStatus = 'todo' | 'in-progress' | 'in-review' | 'done';
+// Import mock data
+import { projects, tasks } from '@/data/mockData';
+import SubTaskCard from '@/components/SubTaskCard';
 
-// Find the task using URL parameter
+// Modified interface to include missing properties
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  priority: 'high' | 'medium' | 'low';
+  assignee: {
+    id: string;
+    name: string;
+    avatar: string;
+  };
+  dueDate: string;
+  comments?: number;
+  completedSubtasks?: number;
+  totalSubtasks?: number;
+}
+
 const TaskPage = () => {
   const { id } = useParams<{ id: string }>();
-  // Find the task or use a default task if not found
-  const task = tasks.find(t => t.id === id) || tasks[0];
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [taskTitle, setTaskTitle] = useState(task.title || '');
-  const [taskDescription, setTaskDescription] = useState(task.description || '');
-  const [taskStatus, setTaskStatus] = useState<TaskStatus>((task.status as TaskStatus) || 'todo');
-  const [taskPriority, setTaskPriority] = useState(task.priority || 'medium');
-  const [taskDueDate, setTaskDueDate] = useState(task.dueDate || '');
-  const [assignees, setAssignees] = useState(task.assignees || []);
-  const [comments, setComments] = useState([
-    {
-      id: '1',
-      user: currentUser,
-      content: 'Let\'s start working on this. I\'ll take the first part.',
-      timestamp: '2 hours ago'
+  
+  // Find the task in the mock data
+  const task: Task = {
+    id: "task-1",
+    title: "Create new dashboard wireframes",
+    description: "Design new wireframes for the project dashboard based on the approved mockups. Include both mobile and desktop versions.",
+    status: "In Progress",
+    priority: "high",
+    assignee: {
+      id: "user-1",
+      name: "Jane Cooper",
+      avatar: "https://i.pravatar.cc/150?img=5"
     },
-    {
-      id: '2',
-      user: teamMembers[0],
-      content: 'I\'ve started on the design mockups, will share by tomorrow.',
-      timestamp: '1 hour ago'
-    }
+    dueDate: "2025-06-10",
+    comments: 8,
+    completedSubtasks: 2,
+    totalSubtasks: 5
+  };
+  
+  // State for edit mode
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedTask, setEditedTask] = useState<Task>(task);
+  
+  // State for subtasks
+  const [subTasks, setSubTasks] = useState([
+    { id: 'sub-1', title: 'Research competitor dashboards', completed: true },
+    { id: 'sub-2', title: 'Create low-fidelity wireframes', completed: true },
+    { id: 'sub-3', title: 'Design high-fidelity mockups', completed: false },
+    { id: 'sub-4', title: 'Get approval from stakeholders', completed: false },
+    { id: 'sub-5', title: 'Finalize design specs for developers', completed: false }
   ]);
-  const [subtasks, setSubtasks] = useState<SubTask[]>([
-    {
-      id: 'subtask-1',
-      title: 'Create wireframes',
-      status: 'completed',
-      priority: 'high',
-      dueDate: '2025-05-22',
-      assignee: teamMembers[0]
-    },
-    {
-      id: 'subtask-2',
-      title: 'Review with stakeholders',
-      status: 'pending',
-      priority: 'medium',
-      dueDate: '2025-05-24',
-      assignee: currentUser
+  
+  // Handle status change
+  const handleStatusChange = (status: string) => {
+    setEditedTask({ ...editedTask, status });
+  };
+  
+  // Get badge variant based on priority
+  const getPriorityBadgeVariant = (priority: 'high' | 'medium' | 'low') => {
+    switch (priority) {
+      case 'high':
+        return 'destructive';
+      case 'medium':
+        return 'default';
+      case 'low':
+        return 'secondary';
+      default:
+        return 'outline';
     }
-  ]);
-  const [newComment, setNewComment] = useState('');
-  const [isSubtaskDialogOpen, setIsSubtaskDialogOpen] = useState(false);
-  const [newSubtask, setNewSubtask] = useState('');
-  const [editingSubtask, setEditingSubtask] = useState<string | null>(null);
-  const [subtaskPriority, setSubtaskPriority] = useState<'low' | 'medium' | 'high' | 'urgent'>('medium');
-  const [subtaskDueDate, setSubtaskDueDate] = useState('');
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-
-  const handleStatusChange = (status: TaskStatus) => {
-    setTaskStatus(status);
-    toast({
-      title: "Status updated",
-      description: `Task status changed to ${status}.`,
-    });
   };
-
-  const handleSaveTask = () => {
-    // In a real app, you would save to API
-    setIsEditMode(false);
-    toast({
-      title: "Task updated",
-      description: "Your changes have been saved successfully.",
-    });
+  
+  // Get color for status
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'completed':
+        return 'bg-green-500';
+      case 'in progress':
+        return 'bg-blue-500';
+      case 'pending':
+        return 'bg-yellow-500';
+      case 'canceled':
+        return 'bg-red-500';
+      default:
+        return 'bg-gray-500';
+    }
   };
-
-  const handleDeleteTask = () => {
-    // In a real app, you would delete via API
-    setIsDeleteDialogOpen(false);
-    toast({
-      title: "Task deleted",
-      description: "The task has been successfully deleted.",
-    });
-    // Here you would typically redirect to projects or tasks list
-  };
-
-  const handleAddComment = () => {
-    if (!newComment.trim()) return;
-    
-    const comment = {
-      id: `comment-${Date.now()}`,
-      user: currentUser,
-      content: newComment,
-      timestamp: 'Just now'
-    };
-    
-    setComments([...comments, comment]);
-    setNewComment('');
-    toast({
-      title: "Comment added",
-      description: "Your comment has been added to the task.",
-    });
-  };
-
-  const handleSubtaskStatusChange = (id: string) => {
-    setSubtasks(subtasks.map(st => 
-      st.id === id 
-        ? { ...st, status: st.status === 'completed' ? 'pending' : 'completed' }
-        : st
+  
+  // Calculate completion percentage
+  const completionPercentage = task.completedSubtasks && task.totalSubtasks 
+    ? Math.round((task.completedSubtasks / task.totalSubtasks) * 100) 
+    : 0;
+  
+  // Toggle subtask completion
+  const toggleSubtaskCompletion = (id: string) => {
+    setSubTasks(subTasks.map(st => 
+      st.id === id ? { ...st, completed: !st.completed } : st
     ));
   };
-
-  const handleSubtaskEdit = (id: string) => {
-    setEditingSubtask(id);
-    const subtask = subtasks.find(st => st.id === id);
-    if (subtask) {
-      setNewSubtask(subtask.title);
-      setSubtaskPriority(subtask.priority || 'medium');
-      setSubtaskDueDate(subtask.dueDate || '');
-      setIsSubtaskDialogOpen(true);
-    }
+  
+  // Handle save changes
+  const handleSaveChanges = () => {
+    setIsEditing(false);
+    // Here we would typically make an API call to save the changes
+    console.log('Saving changes:', editedTask);
   };
-
-  const handleSubtaskDelete = (id: string) => {
-    setSubtasks(subtasks.filter(st => st.id !== id));
-    toast({
-      title: "Subtask deleted",
-      description: "The subtask has been successfully removed.",
+  
+  // Format due date
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric',
+      year: 'numeric'
     });
   };
-
-  const handleAddSubtask = () => {
-    if (!newSubtask.trim()) return;
-
-    const subtask: SubTask = {
-      id: `subtask-${Date.now()}`,
-      title: newSubtask,
-      status: 'pending',
-      assignee: currentUser,
-      priority: subtaskPriority,
-      dueDate: subtaskDueDate || undefined,
-    };
-
-    setSubtasks([...subtasks, subtask]);
-    resetSubtaskForm();
-    toast({
-      title: "Subtask added",
-      description: "The subtask has been successfully added to the task.",
+  
+  // Mock activity data
+  const activityItems = [
+    {
+      id: 1,
+      user: { name: 'Jane Cooper', avatar: 'https://i.pravatar.cc/150?img=5', id: 'user-1' },
+      action: 'created',
+      target: 'this task',
+      timestamp: '2025-05-15T09:30:00Z'
+    },
+    {
+      id: 2,
+      user: { name: 'Alex Rivera', avatar: 'https://i.pravatar.cc/150?img=8', id: 'user-2' },
+      action: 'changed the status to',
+      target: 'In Progress',
+      timestamp: '2025-05-18T14:22:00Z'
+    },
+    {
+      id: 3,
+      user: { name: 'Jane Cooper', avatar: 'https://i.pravatar.cc/150?img=5', id: 'user-1' },
+      action: 'completed subtask',
+      target: 'Research competitor dashboards',
+      timestamp: '2025-05-19T11:05:00Z'
+    }
+  ];
+  
+  // Format timestamp
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric'
+    }) + ' at ' + date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
     });
   };
-
-  const handleSubtaskSave = () => {
-    if (editingSubtask) {
-      setSubtasks(subtasks.map(st => 
-        st.id === editingSubtask 
-          ? { 
-              ...st, 
-              title: newSubtask,
-              priority: subtaskPriority,
-              dueDate: subtaskDueDate || undefined
-            }
-          : st
-      ));
-      toast({
-        title: "Subtask updated",
-        description: "The subtask has been successfully updated.",
-      });
-    } else {
-      handleAddSubtask();
-    }
-    setIsSubtaskDialogOpen(false);
-  };
-
-  const resetSubtaskForm = () => {
-    setNewSubtask('');
-    setSubtaskPriority('medium');
-    setSubtaskDueDate('');
-    setEditingSubtask(null);
-  };
-
-  // Priority badge color
-  const getPriorityColor = (priority?: string) => {
-    switch (priority) {
-      case 'low': return 'bg-green-100 text-green-800';
-      case 'medium': return 'bg-blue-100 text-blue-800';
-      case 'high': return 'bg-orange-100 text-orange-800';
-      case 'urgent': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
+  
   return (
-    <div className="flex-1 p-6">
-      <Header 
-        title={isEditMode ? "Edit Task" : task.title}
-        user={currentUser} 
-        notificationCount={3} 
-      />
-      
-      <div className="mt-6 bg-white rounded-lg border p-6">
-        {isEditMode ? (
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="task-title">Task Title</Label>
-              <Input
-                id="task-title"
-                value={taskTitle}
-                onChange={(e) => setTaskTitle(e.target.value)}
-                className="mt-1"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="task-description">Description</Label>
-              <Textarea
-                id="task-description"
-                value={taskDescription}
-                onChange={(e) => setTaskDescription(e.target.value)}
-                className="mt-1 min-h-[100px]"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="task-status">Status</Label>
-                <Select 
-                  value={taskStatus} 
-                  onValueChange={(value: TaskStatus) => setTaskStatus(value)}
-                >
-                  <SelectTrigger id="task-status" className="mt-1">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todo">To Do</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="in-review">In Review</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="task-priority">Priority</Label>
-                <Select value={taskPriority} onValueChange={setTaskPriority}>
-                  <SelectTrigger id="task-priority" className="mt-1">
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <Label htmlFor="task-duedate">Due Date</Label>
-                <Input
-                  id="task-duedate"
-                  type="date"
-                  value={taskDueDate}
-                  onChange={(e) => setTaskDueDate(e.target.value)}
-                  className="mt-1"
+    <div className="flex flex-col space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main task card */}
+        <Card className="lg:col-span-2">
+          <CardHeader className="flex flex-row items-start justify-between space-y-0">
+            <div className="space-y-1.5">
+              {!isEditing ? (
+                <CardTitle className="text-2xl font-bold">{editedTask.title}</CardTitle>
+              ) : (
+                <Textarea 
+                  className="text-2xl font-bold resize-none h-12 p-0 border-none focus-visible:ring-0"
+                  value={editedTask.title}
+                  onChange={(e) => setEditedTask({...editedTask, title: e.target.value})}
                 />
-              </div>
-              
-              <div>
-                <Label htmlFor="task-assignee">Assignee</Label>
-                <Select>
-                  <SelectTrigger id="task-assignee" className="mt-1">
-                    <SelectValue placeholder="Select assignee" />
+              )}
+              <CardDescription className="flex items-center space-x-2">
+                <div className={`w-2 h-2 rounded-full ${getStatusColor(editedTask.status)}`}></div>
+                <span className="font-medium">{editedTask.status}</span>
+                <Badge variant={getPriorityBadgeVariant(editedTask.priority)}>
+                  {editedTask.priority.charAt(0).toUpperCase() + editedTask.priority.slice(1)}
+                </Badge>
+              </CardDescription>
+            </div>
+            {!isEditing ? (
+              <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                <Edit className="mr-1 h-3.5 w-3.5" />
+                Edit
+              </Button>
+            ) : (
+              <Button variant="default" size="sm" onClick={handleSaveChanges}>
+                <Check className="mr-1 h-3.5 w-3.5" />
+                Save
+              </Button>
+            )}
+          </CardHeader>
+          
+          <CardContent className="space-y-4">
+            {/* Task description */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground">Description</h3>
+              {!isEditing ? (
+                <p className="text-sm">{editedTask.description}</p>
+              ) : (
+                <Textarea 
+                  className="min-h-[100px]"
+                  value={editedTask.description}
+                  onChange={(e) => setEditedTask({...editedTask, description: e.target.value})}
+                  placeholder="Enter task description"
+                />
+              )}
+            </div>
+            
+            {/* Task status */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground">Status</h3>
+              {!isEditing ? (
+                <div className="flex items-center space-x-2">
+                  <div className={`w-2 h-2 rounded-full ${getStatusColor(editedTask.status)}`}></div>
+                  <span>{editedTask.status}</span>
+                </div>
+              ) : (
+                <Select onValueChange={handleStatusChange} defaultValue={editedTask.status}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={currentUser.id || "current-user"}>{currentUser.name}</SelectItem>
-                    {teamMembers.map(member => (
-                      <SelectItem key={member.id || `member-${member.name}`} value={member.id || `member-${member.name}`}>
-                        {member.name}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="Todo">Todo</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="In Review">In Review</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Canceled">Canceled</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
+              )}
             </div>
             
-            <div className="flex justify-end gap-2 pt-4">
-              <Button variant="outline" onClick={() => setIsEditMode(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleSaveTask}>
-                Save Changes
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div>
-            <div className="flex justify-between items-start mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Badge className={getPriorityColor(task.priority)}>
-                    {task.priority || 'Medium'}
-                  </Badge>
-                  <Badge variant={taskStatus === 'done' ? 'outline' : 'secondary'}>
-                    {taskStatus === 'todo' ? 'To Do' : 
-                     taskStatus === 'in-progress' ? 'In Progress' : 
-                     taskStatus === 'in-review' ? 'In Review' : 'Done'}
-                  </Badge>
-                </div>
-                
-                <h1 className="text-xl font-semibold mb-2">{task.title}</h1>
-                <p className="text-gray-600 mb-4">{task.description}</p>
-                
-                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                  {task.dueDate && (
-                    <div className="flex items-center">
-                      <CalendarIcon size={16} className="mr-1" />
-                      <span>Due: {task.dueDate}</span>
-                    </div>
-                  )}
-                  
-                  {task.priority && (
-                    <div className="flex items-center">
-                      <AlertCircle size={16} className="mr-1" />
-                      <span>Priority: {task.priority}</span>
-                    </div>
-                  )}
-                  
-                  {task.attachmentCount && task.attachmentCount > 0 && (
-                    <div className="flex items-center">
-                      <Paperclip size={16} className="mr-1" />
-                      <span>{task.attachmentCount} attachments</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" onClick={() => setIsEditMode(true)}>
-                  <Edit className="h-4 w-4 mr-1" />
-                  Edit
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="text-red-500 hover:text-red-700"
-                  onClick={() => setIsDeleteDialogOpen(true)}
+            {/* Task priority */}
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium text-muted-foreground">Priority</h3>
+              {!isEditing ? (
+                <Badge variant={getPriorityBadgeVariant(editedTask.priority)}>
+                  {editedTask.priority.charAt(0).toUpperCase() + editedTask.priority.slice(1)}
+                </Badge>
+              ) : (
+                <Select 
+                  onValueChange={(value: 'high' | 'medium' | 'low') => setEditedTask({...editedTask, priority: value})} 
+                  defaultValue={editedTask.priority}
                 >
-                  <Trash2 className="h-4 w-4 mr-1" />
-                  Delete
-                </Button>
-              </div>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
             </div>
             
-            <Separator className="my-6" />
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <Tabs defaultValue="subtasks">
-                  <TabsList>
-                    <TabsTrigger value="subtasks">Subtasks</TabsTrigger>
-                    <TabsTrigger value="comments">Comments</TabsTrigger>
-                    <TabsTrigger value="activity">Activity</TabsTrigger>
-                  </TabsList>
-                  
-                  <TabsContent value="subtasks" className="mt-6">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="font-medium">Subtasks</h3>
-                      <Button size="sm" onClick={() => {
-                        resetSubtaskForm();
-                        setIsSubtaskDialogOpen(true);
-                      }}>
-                        Add Subtask
-                      </Button>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      {subtasks.map(subtask => (
-                        <SubTaskCard
-                          key={subtask.id}
-                          subtask={subtask}
-                          onStatusChange={handleSubtaskStatusChange}
-                          onEdit={handleSubtaskEdit}
-                          onDelete={handleSubtaskDelete}
-                        />
-                      ))}
-                      {subtasks.length === 0 && (
-                        <div className="text-center py-8 text-gray-500">
-                          No subtasks yet. Add one to break down this task.
-                        </div>
-                      )}
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="comments" className="mt-6">
-                    <div className="space-y-4">
-                      {comments.map(comment => (
-                        <div key={comment.id} className="flex gap-3 p-3 bg-gray-50 rounded-lg">
-                          <Avatar>
-                            <AvatarImage src={comment.user.avatar} alt={comment.user.name} />
-                            <AvatarFallback>{comment.user.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex justify-between">
-                              <p className="font-medium">{comment.user.name}</p>
-                              <span className="text-xs text-gray-500">{comment.timestamp}</span>
-                            </div>
-                            <p className="text-sm mt-1">{comment.content}</p>
-                          </div>
-                        </div>
-                      ))}
-                      
-                      <div className="pt-4">
-                        <Label htmlFor="new-comment">Add Comment</Label>
-                        <div className="flex gap-2 mt-1">
-                          <Textarea
-                            id="new-comment"
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Type your comment here..."
-                            className="flex-1"
-                          />
-                          <Button onClick={handleAddComment} disabled={!newComment.trim()}>
-                            Post
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                  
-                  <TabsContent value="activity" className="mt-6">
-                    <div className="space-y-4">
-                      <div className="flex gap-3">
-                        <div className="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center">
-                          <Edit size={14} />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Alex Johnson</span>
-                            <span className="text-gray-500">updated the status</span>
-                          </div>
-                          <p className="text-sm text-gray-600">Changed status from "To Do" to "In Progress"</p>
-                          <span className="text-xs text-gray-500">Today at 10:30 AM</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-3">
-                        <div className="bg-green-100 text-green-800 rounded-full w-8 h-8 flex items-center justify-center">
-                          <CheckCircle size={14} />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">Sarah Miller</span>
-                            <span className="text-gray-500">completed a subtask</span>
-                          </div>
-                          <p className="text-sm text-gray-600">Completed "Create wireframes"</p>
-                          <span className="text-xs text-gray-500">Yesterday at 4:15 PM</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-3">
-                        <div className="bg-purple-100 text-purple-800 rounded-full w-8 h-8 flex items-center justify-center">
-                          <MessageSquare size={14} />
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">John Davis</span>
-                            <span className="text-gray-500">commented</span>
-                          </div>
-                          <p className="text-sm text-gray-600">Added a comment on this task</p>
-                          <span className="text-xs text-gray-500">2 days ago</span>
-                        </div>
-                      </div>
-                    </div>
-                  </TabsContent>
-                </Tabs>
+            {/* Task metadata */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Due Date</div>
+                  <div className="text-sm font-medium">{formatDate(editedTask.dueDate)}</div>
+                </div>
               </div>
+              <div className="flex items-center">
+                <Users className="mr-2 h-4 w-4 text-muted-foreground" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Assignee</div>
+                  <div className="text-sm font-medium flex items-center">
+                    <Avatar className="h-5 w-5 mr-1">
+                      <AvatarImage src={editedTask.assignee.avatar} alt={editedTask.assignee.name} />
+                      <AvatarFallback>{editedTask.assignee.name[0]}</AvatarFallback>
+                    </Avatar>
+                    {editedTask.assignee.name}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Activity className="mr-2 h-4 w-4 text-muted-foreground" />
+                <div>
+                  <div className="text-xs text-muted-foreground">Progress</div>
+                  <div className="text-sm font-medium">{completionPercentage}% Complete</div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+          
+          <Separator />
+          
+          <CardFooter className="pt-4">
+            <Tabs defaultValue="subtasks" className="w-full">
+              <TabsList className="mb-2">
+                <TabsTrigger value="subtasks" className="flex items-center">
+                  <Clipboard className="mr-1 h-4 w-4" />
+                  Subtasks ({subTasks.filter(st => st.completed).length}/{subTasks.length})
+                </TabsTrigger>
+                <TabsTrigger value="comments" className="flex items-center">
+                  <MessageSquare className="mr-1 h-4 w-4" />
+                  Comments ({task.comments})
+                </TabsTrigger>
+                <TabsTrigger value="activity" className="flex items-center">
+                  <Activity className="mr-1 h-4 w-4" />
+                  Activity
+                </TabsTrigger>
+              </TabsList>
               
-              <div>
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="text-base">Details</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Status</h4>
-                      <Select 
-                        value={taskStatus} 
-                        onValueChange={(value: TaskStatus) => handleStatusChange(value)}
-                      >
-                        <SelectTrigger className="mt-1">
-                          <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="todo">To Do</SelectItem>
-                          <SelectItem value="in-progress">In Progress</SelectItem>
-                          <SelectItem value="in-review">In Review</SelectItem>
-                          <SelectItem value="done">Done</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Assignees</h4>
-                      <div className="mt-2 space-y-2">
-                        {task.assignees && task.assignees.map((assignee, index) => (
-                          <div key={index} className="flex items-center gap-2">
-                            <Avatar className="h-6 w-6">
-                              <AvatarImage src={assignee.avatar} alt={assignee.name} />
-                              <AvatarFallback>{assignee.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <span className="text-sm">{assignee.name}</span>
-                          </div>
-                        ))}
-                        <Button variant="outline" size="sm" className="w-full mt-2">
-                          Add Assignee
-                        </Button>
+              <TabsContent value="subtasks">
+                <div className="space-y-2">
+                  <Progress value={completionPercentage} className="h-2" />
+                  <div className="space-y-2 mt-4">
+                    {subTasks.map(subtask => (
+                      <SubTaskCard 
+                        key={subtask.id} 
+                        title={subtask.title}
+                        completed={subtask.completed}
+                        onToggle={() => toggleSubtaskCompletion(subtask.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </TabsContent>
+              
+              <TabsContent value="comments">
+                <TaskComments />
+              </TabsContent>
+              
+              <TabsContent value="activity">
+                <div className="space-y-4">
+                  {activityItems.map(item => (
+                    <div key={item.id} className="flex items-start space-x-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={item.user.avatar} alt={item.user.name} />
+                        <AvatarFallback>{item.user.name[0]}</AvatarFallback>
+                      </Avatar>
+                      <div className="space-y-0.5">
+                        <p className="text-sm">
+                          <span className="font-medium">{item.user.name}</span>
+                          {' '}{item.action}{' '}
+                          <span className="font-medium">{item.target}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">{formatTimestamp(item.timestamp)}</p>
                       </div>
                     </div>
-                    
-                    <Separator />
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Tags</h4>
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        <Badge variant="outline" className="bg-blue-50">Feature</Badge>
-                        <Badge variant="outline" className="bg-green-50">Frontend</Badge>
-                        <Button variant="outline" size="sm" className="h-6">
-                          <Tag className="h-3 w-3 mr-1" />
-                          Add Tag
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    <Separator />
-                    
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500">Dates</h4>
-                      <div className="space-y-2 mt-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Created</span>
-                          <span>May 15, 2025</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-500">Due Date</span>
-                          <span>{task.dueDate || 'Not set'}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardFooter>
+        </Card>
+        
+        {/* Sidebar with additional info */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Task Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Project info */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Project</h4>
+              <div className="flex items-center space-x-2">
+                <div className="w-4 h-4 bg-app-blue rounded"></div>
+                <span>Website Redesign</span>
               </div>
             </div>
-          </div>
-        )}
+            
+            {/* Tags */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Tags</h4>
+              <div className="flex flex-wrap gap-2">
+                <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/20">UI Design</Badge>
+                <Badge variant="outline" className="bg-green-50 dark:bg-green-900/20">Dashboard</Badge>
+                <Badge variant="outline" className="bg-purple-50 dark:bg-purple-900/20">UX</Badge>
+              </div>
+            </div>
+            
+            {/* Watchers */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Watchers</h4>
+              <div className="flex -space-x-2">
+                <Avatar className="h-8 w-8 border-2 border-background">
+                  <AvatarImage src="https://i.pravatar.cc/150?img=1" alt="User 1" />
+                  <AvatarFallback>U1</AvatarFallback>
+                </Avatar>
+                <Avatar className="h-8 w-8 border-2 border-background">
+                  <AvatarImage src="https://i.pravatar.cc/150?img=2" alt="User 2" />
+                  <AvatarFallback>U2</AvatarFallback>
+                </Avatar>
+                <Avatar className="h-8 w-8 border-2 border-background">
+                  <AvatarImage src="https://i.pravatar.cc/150?img=3" alt="User 3" />
+                  <AvatarFallback>U3</AvatarFallback>
+                </Avatar>
+                <Avatar className="h-8 w-8 border-2 border-background bg-muted">
+                  <AvatarFallback>+2</AvatarFallback>
+                </Avatar>
+              </div>
+            </div>
+            
+            {/* Time tracking */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Time Tracking</h4>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span>Logged time</span>
+                  <span className="font-medium">4h 15m</span>
+                </div>
+                <Progress value={70} className="h-1" />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>Estimate: 6h</span>
+                  <span>Remaining: 1h 45m</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Attachments */}
+            <div>
+              <h4 className="text-sm font-medium text-muted-foreground mb-1">Attachments</h4>
+              <div className="space-y-2">
+                <div className="flex items-center p-2 rounded-md border">
+                  <div className="bg-muted w-10 h-10 rounded flex items-center justify-center mr-3">
+                    PDF
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">design_requirements.pdf</div>
+                    <div className="text-xs text-muted-foreground">1.2 MB • Added 2 days ago</div>
+                  </div>
+                </div>
+                <div className="flex items-center p-2 rounded-md border">
+                  <div className="bg-muted w-10 h-10 rounded flex items-center justify-center mr-3">
+                    IMG
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-sm font-medium truncate">mockup_v2.png</div>
+                    <div className="text-xs text-muted-foreground">3.8 MB • Added yesterday</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-      
-      {/* Subtask Dialog */}
-      <Dialog open={isSubtaskDialogOpen} onOpenChange={(open) => {
-        if (!open) resetSubtaskForm();
-        setIsSubtaskDialogOpen(open);
-      }}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editingSubtask ? 'Edit Subtask' : 'Add New Subtask'}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div>
-              <Label htmlFor="subtask-title">Subtask Title</Label>
-              <Input
-                id="subtask-title"
-                value={newSubtask}
-                onChange={(e) => setNewSubtask(e.target.value)}
-                placeholder="Enter subtask title"
-                className="mt-2"
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="subtask-priority">Priority</Label>
-              <Select value={subtaskPriority} onValueChange={(value: any) => setSubtaskPriority(value)}>
-                <SelectTrigger id="subtask-priority" className="mt-2">
-                  <SelectValue placeholder="Select priority" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="urgent">Urgent</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div>
-              <Label htmlFor="subtask-duedate">Due Date (Optional)</Label>
-              <Input
-                id="subtask-duedate"
-                type="date"
-                value={subtaskDueDate}
-                onChange={(e) => setSubtaskDueDate(e.target.value)}
-                className="mt-2"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => {
-              resetSubtaskForm();
-              setIsSubtaskDialogOpen(false);
-            }}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubtaskSave} disabled={!newSubtask.trim()}>
-              {editingSubtask ? 'Save Changes' : 'Add Subtask'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Deletion</DialogTitle>
-          </DialogHeader>
-          <p>Are you sure you want to delete this task? This action cannot be undone.</p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleDeleteTask}>
-              Delete Task
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

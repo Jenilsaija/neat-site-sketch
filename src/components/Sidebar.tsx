@@ -1,9 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   Home, 
-  LayoutDashboard, 
   Folder, 
   MessageSquare, 
   Users, 
@@ -11,24 +10,31 @@ import {
   ChevronLeft, 
   ChevronRight,
   Sun,
-  Moon
+  Moon,
+  Calendar,
+  Clock
 } from 'lucide-react';
 import { useTheme } from '@/hooks/use-theme';
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-const Sidebar = () => {
+interface SidebarProps {
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+}
+
+const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
   const { theme, setTheme } = useTheme();
   
   const menuItems = [
     { icon: Home, label: 'Dashboard', path: '/' },
     { icon: Folder, label: 'Projects', path: '/projects' },
+    { icon: Calendar, label: 'Calendar', path: '/calendar' },
     { icon: MessageSquare, label: 'Messages', path: '/messages' },
     { icon: Users, label: 'Team', path: '/team' },
-    { icon: Settings, label: 'Settings', path: '/settings' },
+    { icon: Clock, label: 'Time Tracking', path: '/time' },
   ];
 
   const isActive = (path) => {
@@ -42,9 +48,9 @@ const Sidebar = () => {
   
   return (
     <div 
-      className={`h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 ${
-        collapsed ? 'w-[4.5rem]' : 'w-64'
-      } fixed left-0 top-0 z-10`}
+      className={`h-screen bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 fixed z-30
+        ${collapsed ? 'w-[4.5rem]' : 'w-64'}
+      `}
     >
       <div className="flex items-center px-4 h-16 border-b border-sidebar-border">
         {!collapsed && (
@@ -53,7 +59,7 @@ const Sidebar = () => {
             onClick={() => navigate('/')}
           >
             <div className="w-8 h-8 bg-sidebar-primary rounded flex items-center justify-center">
-              <LayoutDashboard size={16} className="text-sidebar-primary-foreground" />
+              <span className="text-sidebar-primary-foreground font-bold">TF</span>
             </div>
             <span className="font-semibold text-lg">TaskFlow</span>
           </div>
@@ -64,7 +70,7 @@ const Sidebar = () => {
             onClick={() => navigate('/')}
           >
             <div className="w-8 h-8 bg-sidebar-primary rounded flex items-center justify-center">
-              <LayoutDashboard size={16} className="text-sidebar-primary-foreground" />
+              <span className="text-sidebar-primary-foreground font-bold">TF</span>
             </div>
           </div>
         )}
@@ -102,6 +108,7 @@ const Sidebar = () => {
             size="icon"
             onClick={toggleTheme}
             className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
           >
             {theme === 'light' ? (
               <Moon size={20} />
@@ -109,6 +116,17 @@ const Sidebar = () => {
               <Sun size={20} />
             )}
           </Button>
+          
+          <Link to="/settings">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              aria-label="Settings"
+            >
+              <Settings size={20} />
+            </Button>
+          </Link>
           
           <Button
             variant="ghost"
