@@ -38,6 +38,9 @@ const Sidebar = ({ collapsed, setCollapsed }: SidebarProps) => {
   ];
 
   const isActive = (path) => {
+    if (path === '/calendar' && location.pathname === '/gantt') {
+      return true;
+    }
     return location.pathname === path || 
            (path !== '/' && location.pathname.startsWith(path));
   };

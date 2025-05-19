@@ -33,6 +33,8 @@ const TopBar = ({ collapsed, setCollapsed }: TopBarProps) => {
     if (path === '/') return 'Dashboard';
     if (path.startsWith('/projects') && path.length > 9) return 'Project Details';
     if (path.startsWith('/tasks')) return 'Task Details';
+    if (path === '/calendar') return 'Calendar';
+    if (path === '/gantt') return 'Gantt Chart';
     return path.split('/')[1].charAt(0).toUpperCase() + path.split('/')[1].slice(1);
   };
 
@@ -77,7 +79,7 @@ const TopBar = ({ collapsed, setCollapsed }: TopBarProps) => {
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">{currentUser.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{currentUser.email}</p>
+                  <p className="text-xs leading-none text-muted-foreground">{currentUser.email || 'user@example.com'}</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

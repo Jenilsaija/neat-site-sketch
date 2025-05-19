@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
-import Sidebar from "./components/Sidebar";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import Team from "./pages/Team";
@@ -17,8 +16,9 @@ import NotFound from "./pages/NotFound";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
+import Calendar from "./pages/Calendar";
+import GanttChart from "./pages/GanttChart";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
-import { useIsMobile } from "./hooks/use-mobile";
 import { ThemeProvider } from "./hooks/use-theme";
 import Layout from "./components/Layout";
 
@@ -97,6 +97,16 @@ const App = () => {
                   <Route path="/settings" element={
                     <Layout>
                       <Settings />
+                    </Layout>
+                  } />
+                  <Route path="/calendar" element={
+                    <Layout>
+                      <Calendar />
+                    </Layout>
+                  } />
+                  <Route path="/gantt" element={
+                    <Layout>
+                      <GanttChart />
                     </Layout>
                   } />
                   <Route path="*" element={<Navigate to="/" replace />} />
