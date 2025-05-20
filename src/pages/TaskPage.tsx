@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Edit, ChevronDown, Check, Clipboard, MessageSquare, Clock, Calendar, Users, Activity } from 'lucide-react';
@@ -101,6 +102,13 @@ const TaskPage = () => {
     setEditedTask({ ...editedTask, status });
   };
   
+  // Add handleSaveChanges function that was missing
+  const handleSaveChanges = () => {
+    setIsEditing(false);
+    // Here we would typically make an API call to save the changes
+    console.log('Saving changes:', editedTask);
+  };
+  
   // Get badge variant based on priority
   const getPriorityBadgeVariant = (priority: 'high' | 'medium' | 'low') => {
     switch (priority) {
@@ -131,10 +139,8 @@ const TaskPage = () => {
     }
   };
   
-  // Calculate completion percentage
-  const completionPercentage = task.completedSubtasks && task.totalSubtasks 
-    ? Math.round((task.completedSubtasks / task.totalSubtasks) * 100) 
-    : 0;
+  // Calculate completion percentage based on subtasks with 'completed' status
+  const completionPercentage = Math.round((subTasks.filter(st => st.status === 'completed').length / subTasks.length) * 100);
   
   // Format due date
   const formatDate = (dateStr: string) => {
@@ -198,9 +204,6 @@ const TaskPage = () => {
       timestamp: '2025-05-15T10:15:00Z'
     }
   ];
-  
-  // Calculate completion percentage based on subtasks with 'completed' status
-  const completionPercentage = Math.round((subTasks.filter(st => st.status === 'completed').length / subTasks.length) * 100);
   
   return (
     <div className="flex flex-col space-y-6">
