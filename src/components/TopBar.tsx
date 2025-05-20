@@ -79,7 +79,7 @@ const TopBar = ({ collapsed, setCollapsed }: TopBarProps) => {
               <DropdownMenuLabel>
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-medium leading-none">{currentUser.name}</p>
-                  <p className="text-xs leading-none text-muted-foreground">{currentUser.email || 'user@example.com'}</p>
+                  <p className="text-xs leading-none text-muted-foreground">user@example.com</p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />

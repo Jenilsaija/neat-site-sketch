@@ -24,6 +24,13 @@ import TaskComments from "@/components/TaskComments";
 import { projects, tasks } from '@/data/mockData';
 import SubTaskCard from '@/components/SubTaskCard';
 
+// Updated interface to match SubTaskCard component props
+interface SubTask {
+  id: string;
+  name: string;
+  completed: boolean;
+}
+
 // Modified interface to include missing properties
 interface Task {
   id: string;
@@ -69,11 +76,11 @@ const TaskPage = () => {
   
   // State for subtasks
   const [subTasks, setSubTasks] = useState([
-    { id: 'sub-1', title: 'Research competitor dashboards', completed: true },
-    { id: 'sub-2', title: 'Create low-fidelity wireframes', completed: true },
-    { id: 'sub-3', title: 'Design high-fidelity mockups', completed: false },
-    { id: 'sub-4', title: 'Get approval from stakeholders', completed: false },
-    { id: 'sub-5', title: 'Finalize design specs for developers', completed: false }
+    { id: 'sub-1', name: 'Research competitor dashboards', completed: true },
+    { id: 'sub-2', name: 'Create low-fidelity wireframes', completed: true },
+    { id: 'sub-3', name: 'Design high-fidelity mockups', completed: false },
+    { id: 'sub-4', name: 'Get approval from stakeholders', completed: false },
+    { id: 'sub-5', name: 'Finalize design specs for developers', completed: false }
   ]);
   
   // Handle status change
@@ -176,6 +183,22 @@ const TaskPage = () => {
       minute: '2-digit'
     });
   };
+  
+  // Sample comments for TaskComments component
+  const sampleComments = [
+    {
+      id: '1',
+      user: { name: 'Jane Cooper', avatar: 'https://i.pravatar.cc/150?img=5' },
+      content: 'I've started on the research. Looking at dashboards from XYZ and ABC companies.',
+      timestamp: '2025-05-15T09:30:00Z'
+    },
+    {
+      id: '2',
+      user: { name: 'Alex Rivera', avatar: 'https://i.pravatar.cc/150?img=8' },
+      content: 'Make sure to include mobile views in the wireframes.',
+      timestamp: '2025-05-15T10:15:00Z'
+    }
+  ];
   
   return (
     <div className="flex flex-col space-y-6">
@@ -336,7 +359,7 @@ const TaskPage = () => {
                     {subTasks.map(subtask => (
                       <SubTaskCard 
                         key={subtask.id} 
-                        title={subtask.title}
+                        name={subtask.name}
                         completed={subtask.completed}
                         onToggle={() => toggleSubtaskCompletion(subtask.id)}
                       />
@@ -346,7 +369,13 @@ const TaskPage = () => {
               </TabsContent>
               
               <TabsContent value="comments">
-                <TaskComments />
+                <TaskComments 
+                  initialComments={sampleComments}
+                  currentUser={{
+                    name: 'Current User',
+                    avatar: 'https://i.pravatar.cc/150?img=1'
+                  }}
+                />
               </TabsContent>
               
               <TabsContent value="activity">
