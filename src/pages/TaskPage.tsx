@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Edit, ChevronDown, Check, Clipboard, MessageSquare, Clock, Calendar, Users, Activity } from 'lucide-react';
@@ -189,7 +188,7 @@ const TaskPage = () => {
     {
       id: '1',
       user: { name: 'Jane Cooper', avatar: 'https://i.pravatar.cc/150?img=5' },
-      content: 'I've started on the research. Looking at dashboards from XYZ and ABC companies.',
+      content: "I've started on the research. Looking at dashboards from XYZ and ABC companies.",
       timestamp: '2025-05-15T09:30:00Z'
     },
     {
