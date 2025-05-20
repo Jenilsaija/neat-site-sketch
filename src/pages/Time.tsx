@@ -8,8 +8,18 @@ import { currentUser } from '@/data/mockData';
 import { format } from 'date-fns';
 import Layout from '@/components/Layout';
 
+// Define interface for time entry
+interface TimeEntry {
+  id: number;
+  project: string;
+  task: string;
+  startTime: Date;
+  endTime: Date;
+  color: string;
+}
+
 // Mock time entries data
-const timeEntries = [
+const timeEntries: TimeEntry[] = [
   { 
     id: 1, 
     project: 'Website Redesign', 
@@ -44,9 +54,17 @@ const timeEntries = [
   }
 ];
 
+// Define interface for grouped entries
+interface GroupedTimeEntries {
+  date: string;
+  formattedDate: string;
+  entries: TimeEntry[];
+  totalTime: number;
+}
+
 // Group entries by date
-const groupEntriesByDate = (entries) => {
-  const grouped = {};
+const groupEntriesByDate = (entries: TimeEntry[]): GroupedTimeEntries[] => {
+  const grouped: Record<string, TimeEntry[]> = {};
   
   entries.forEach(entry => {
     const dateKey = format(entry.startTime, 'yyyy-MM-dd');
@@ -69,14 +87,14 @@ const groupEntriesByDate = (entries) => {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-const formatDuration = (minutes) => {
+const formatDuration = (minutes: number): string => {
   const hours = Math.floor(minutes / 60);
   const mins = Math.round(minutes % 60);
   return `${hours}h ${mins}m`;
 };
 
 const TimePage = () => {
-  const [activeTimer, setActiveTimer] = useState(null);
+  const [activeTimer, setActiveTimer] = useState<number | null>(null);
   const [timerRunning, setTimerRunning] = useState(false);
   const groupedEntries = groupEntriesByDate(timeEntries);
   
