@@ -18,6 +18,9 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Calendar from "./pages/Calendar";
 import GanttChart from "./pages/GanttChart";
+import Time from "./pages/Time";
+import UserSettings from "./pages/UserSettings";
+import Analytics from "./pages/Analytics";
 import { currentUser, projects, teamMembers, dashboardData } from './data/mockData';
 import { ThemeProvider } from "./hooks/use-theme";
 import Layout from "./components/Layout";
@@ -99,6 +102,11 @@ const App = () => {
                       <Settings />
                     </Layout>
                   } />
+                  <Route path="/user-settings" element={
+                    <Layout>
+                      <UserSettings />
+                    </Layout>
+                  } />
                   <Route path="/calendar" element={
                     <Layout>
                       <Calendar />
@@ -107,6 +115,16 @@ const App = () => {
                   <Route path="/gantt" element={
                     <Layout>
                       <GanttChart />
+                    </Layout>
+                  } />
+                  <Route path="/time" element={
+                    <Layout>
+                      <Time />
+                    </Layout>
+                  } />
+                  <Route path="/analytics" element={
+                    <Layout>
+                      <Analytics />
                     </Layout>
                   } />
                   <Route path="*" element={<Navigate to="/" replace />} />
