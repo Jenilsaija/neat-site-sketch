@@ -21,14 +21,7 @@ import TaskComments from "@/components/TaskComments";
 
 // Import mock data
 import { projects, tasks } from '@/data/mockData';
-import SubTaskCard from '@/components/SubTaskCard';
-
-// Updated interface to match SubTaskCard component props
-interface SubTask {
-  id: string;
-  name: string;
-  completed: boolean;
-}
+import SubTaskCard, { SubTask } from '@/components/SubTaskCard';
 
 // Modified interface to include missing properties
 interface Task {
@@ -73,15 +66,36 @@ const TaskPage = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState<Task>(task);
   
-  // State for subtasks
-  const [subTasks, setSubTasks] = useState([
-    { id: 'sub-1', name: 'Research competitor dashboards', completed: true },
-    { id: 'sub-2', name: 'Create low-fidelity wireframes', completed: true },
-    { id: 'sub-3', name: 'Design high-fidelity mockups', completed: false },
-    { id: 'sub-4', name: 'Get approval from stakeholders', completed: false },
-    { id: 'sub-5', name: 'Finalize design specs for developers', completed: false }
+  // State for subtasks - updated to match SubTask interface from SubTaskCard
+  const [subTasks, setSubTasks] = useState<SubTask[]>([
+    { id: 'sub-1', title: 'Research competitor dashboards', status: 'completed' },
+    { id: 'sub-2', title: 'Create low-fidelity wireframes', status: 'completed' },
+    { id: 'sub-3', title: 'Design high-fidelity mockups', status: 'pending' },
+    { id: 'sub-4', title: 'Get approval from stakeholders', status: 'pending' },
+    { id: 'sub-5', title: 'Finalize design specs for developers', status: 'pending' }
   ]);
   
+  // Handle status change - updated for SubTaskCard
+  const handleSubtaskStatusChange = (id: string) => {
+    setSubTasks(subTasks.map(st => 
+      st.id === id ? { 
+        ...st, 
+        status: st.status === 'completed' ? 'pending' : 'completed' 
+      } : st
+    ));
+  };
+  
+  // Handle edit subtask
+  const handleEditSubtask = (id: string) => {
+    console.log("Edit subtask:", id);
+    // Implement edit functionality
+  };
+  
+  // Handle delete subtask
+  const handleDeleteSubtask = (id: string) => {
+    setSubTasks(subTasks.filter(st => st.id !== id));
+  };
+
   // Handle status change
   const handleStatusChange = (status: string) => {
     setEditedTask({ ...editedTask, status });
@@ -121,20 +135,6 @@ const TaskPage = () => {
   const completionPercentage = task.completedSubtasks && task.totalSubtasks 
     ? Math.round((task.completedSubtasks / task.totalSubtasks) * 100) 
     : 0;
-  
-  // Toggle subtask completion
-  const toggleSubtaskCompletion = (id: string) => {
-    setSubTasks(subTasks.map(st => 
-      st.id === id ? { ...st, completed: !st.completed } : st
-    ));
-  };
-  
-  // Handle save changes
-  const handleSaveChanges = () => {
-    setIsEditing(false);
-    // Here we would typically make an API call to save the changes
-    console.log('Saving changes:', editedTask);
-  };
   
   // Format due date
   const formatDate = (dateStr: string) => {
@@ -198,6 +198,9 @@ const TaskPage = () => {
       timestamp: '2025-05-15T10:15:00Z'
     }
   ];
+  
+  // Calculate completion percentage based on subtasks with 'completed' status
+  const completionPercentage = Math.round((subTasks.filter(st => st.status === 'completed').length / subTasks.length) * 100);
   
   return (
     <div className="flex flex-col space-y-6">
@@ -339,7 +342,7 @@ const TaskPage = () => {
               <TabsList className="mb-2">
                 <TabsTrigger value="subtasks" className="flex items-center">
                   <Clipboard className="mr-1 h-4 w-4" />
-                  Subtasks ({subTasks.filter(st => st.completed).length}/{subTasks.length})
+                  Subtasks ({subTasks.filter(st => st.status === 'completed').length}/{subTasks.length})
                 </TabsTrigger>
                 <TabsTrigger value="comments" className="flex items-center">
                   <MessageSquare className="mr-1 h-4 w-4" />
@@ -357,10 +360,11 @@ const TaskPage = () => {
                   <div className="space-y-2 mt-4">
                     {subTasks.map(subtask => (
                       <SubTaskCard 
-                        key={subtask.id} 
-                        name={subtask.name}
-                        completed={subtask.completed}
-                        onToggle={() => toggleSubtaskCompletion(subtask.id)}
+                        key={subtask.id}
+                        subtask={subtask}
+                        onStatusChange={handleSubtaskStatusChange}
+                        onEdit={handleEditSubtask}
+                        onDelete={handleDeleteSubtask}
                       />
                     ))}
                   </div>
