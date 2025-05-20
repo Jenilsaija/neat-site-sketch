@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import Header from '@/components/Header';
 import { Card } from '@/components/ui/card';
 import { MessageSquare, Search, Menu } from 'lucide-react';
 import { Input } from '@/components/ui/input';
@@ -23,11 +22,9 @@ const Messages = () => {
 
   return (
     <div className="flex-1 h-screen overflow-hidden">
-      <Header 
-        title="Messages" 
-        user={currentUser}
-        notificationCount={2}
-      />
+      <div className="flex items-center justify-between py-4 px-6 border-b border-border">
+        <h1 className="text-xl font-semibold">Messages</h1>
+      </div>
       
       <div className="flex h-[calc(100vh-5rem)] relative">
         {isMobile && (

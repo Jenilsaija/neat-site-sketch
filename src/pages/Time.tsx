@@ -105,7 +105,7 @@ const TimePage = () => {
   return (
     <Layout>
       <div className="space-y-6">
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Time Tracking</h1>
             <p className="text-muted-foreground">Monitor and manage your work hours across projects</p>
@@ -120,7 +120,7 @@ const TimePage = () => {
               New Time Entry
             </Button>
           </div>
-        </header>
+        </div>
         
         <Tabs defaultValue="timeline" className="w-full">
           <TabsList className="grid w-full max-w-md grid-cols-3">

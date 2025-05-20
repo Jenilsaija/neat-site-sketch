@@ -1,6 +1,4 @@
-
 import React, { useState } from 'react';
-import Header from '@/components/Header';
 import KanbanBoard from '@/components/KanbanBoard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Star, Users, Calendar, Plus, AlertCircle } from 'lucide-react';
@@ -143,11 +141,9 @@ const ProjectDetails = ({ user, project }: ProjectDetailsProps) => {
 
   return (
     <div className="flex-1 p-6">
-      <Header 
-        title="Supermassive black hole" 
-        user={user} 
-        notificationCount={3} 
-      />
+      <div className="flex justify-between items-center">
+        <h1 className="text-xl font-semibold">Supermassive black hole</h1>
+      </div>
       
       <div className="mt-6 flex items-center gap-4">
         <button className="text-gray-400 hover:text-yellow-500">

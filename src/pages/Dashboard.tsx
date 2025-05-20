@@ -1,6 +1,4 @@
-
 import React from 'react';
-import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Grid2x2, CheckCircle, Clock, AlertCircle } from 'lucide-react';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
@@ -27,11 +25,11 @@ const Dashboard = ({ user, stats, taskCompletionData, activities }: DashboardPro
   
   return (
     <div className="flex-1 p-4 md:p-6">
-      <Header 
-        title="Dashboard" 
-        user={user} 
-        notificationCount={3} 
-      />
+      <div className="flex items-center justify-between py-4">
+        <div>
+          <h1 className="text-xl font-semibold">Dashboard</h1>
+        </div>
+      </div>
       
       <div className="mt-6">
         <h2 className="font-semibold mb-4 text-gray-800">PROJECTS OVERVIEW</h2>

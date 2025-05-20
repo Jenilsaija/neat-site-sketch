@@ -1,6 +1,4 @@
-
 import React from 'react';
-import Header from '@/components/Header';
 import TeamMember from '@/components/TeamMember';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TeamMember as TeamMemberType } from '@/data/mockData';
@@ -19,11 +17,9 @@ const Team = ({ user, members }: TeamProps) => {
 
   return (
     <div className="flex-1 p-4 md:p-6">
-      <Header 
-        title="Team" 
-        user={user} 
-        notificationCount={3} 
-      />
+      <div className="flex items-center justify-between py-4">
+        <h1 className="text-xl font-semibold">Team</h1>
+      </div>
       
       <div className="mt-6">
         <Tabs defaultValue="all">
