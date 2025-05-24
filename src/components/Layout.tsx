@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import BottomNavigation from './BottomNavigation';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface LayoutProps {
@@ -40,9 +41,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             setMobileOpen={setSidebarOpen}
           />
           
-          <main className="flex-1 bg-background overflow-auto pb-16 safe-area-padding">
+          <main className="flex-1 bg-background overflow-auto pb-20 safe-area-padding">
             {children}
           </main>
+          
+          <BottomNavigation />
         </>
       ) : (
         /* Desktop Layout */

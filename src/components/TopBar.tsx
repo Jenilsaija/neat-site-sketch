@@ -15,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import NotificationsPopover from './notifications/NotificationsPopover';
+import BackButton from './BackButton';
 import { currentUser } from '@/data/mockData';
 
 interface TopBarProps {
@@ -43,14 +44,18 @@ const TopBar = ({ collapsed, setCollapsed, sidebarOpen, setSidebarOpen }: TopBar
       <header className="sticky top-0 z-30 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
         <div className="flex items-center justify-between px-4 h-14">
           <div className="flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={() => setSidebarOpen?.(!sidebarOpen)}
-              className="h-9 w-9"
-            >
-              <Menu size={20} />
-            </Button>
+            {location.pathname !== '/' ? (
+              <BackButton size="icon" className="h-9 w-9" />
+            ) : (
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={() => setSidebarOpen?.(!sidebarOpen)}
+                className="h-9 w-9"
+              >
+                <Menu size={20} />
+              </Button>
+            )}
             <h1 className="text-lg font-semibold truncate">{getPageTitle()}</h1>
           </div>
 
@@ -90,6 +95,9 @@ const TopBar = ({ collapsed, setCollapsed, sidebarOpen, setSidebarOpen }: TopBar
     <header className="sticky top-0 z-20 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border h-16 flex items-center px-4 md:px-6 shadow-sm">
       <div className="flex items-center w-full justify-between">
         <div className="flex items-center gap-3">
+          {location.pathname !== '/' && (
+            <BackButton size="icon" className="mr-2" />
+          )}
           <h1 className="text-lg font-semibold">{getPageTitle()}</h1>
         </div>
 
