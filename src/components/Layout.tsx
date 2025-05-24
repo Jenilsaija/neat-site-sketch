@@ -13,20 +13,20 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
   
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex min-h-screen flex-col md:flex-row bg-background">
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} />
       
       <div 
         className={`
           flex-1 min-h-screen flex flex-col
-          transition-all duration-300
+          transition-all duration-300 ease-in-out
           ${isMobile ? 'w-full' : collapsed ? 'md:ml-[4.5rem]' : 'md:ml-64'}
         `}
       >
         <TopBar collapsed={collapsed} setCollapsed={setCollapsed} />
-        <div className="flex-1 p-6 bg-background">
+        <main className="flex-1 bg-background overflow-auto">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );

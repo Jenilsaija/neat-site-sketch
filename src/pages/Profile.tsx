@@ -29,24 +29,30 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
     .toUpperCase();
 
   return (
-    <div className="container p-4 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">Profile Settings</h1>
+    <div className="container max-w-4xl mx-auto p-4 md:py-8">
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold">Profile Settings</h1>
+      </div>
       
       <div className="grid gap-6 md:gap-8">
         <Card>
-          <CardHeader className={`flex-row items-center ${isMobile ? 'flex-wrap' : 'gap-4'} space-y-0`}>
-            <div className="relative mb-2 md:mb-0">
-              <Avatar className={`${isMobile ? 'h-16 w-16' : 'h-20 w-20'}`}>
+          <CardHeader className={`${isMobile ? 'text-center' : 'flex-row items-center gap-4'} space-y-0`}>
+            <div className={`relative ${isMobile ? 'mx-auto mb-4' : 'mb-0'}`}>
+              <Avatar className="h-20 w-20 md:h-24 md:w-24">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback>{initials}</AvatarFallback>
+                <AvatarFallback className="text-lg">{initials}</AvatarFallback>
               </Avatar>
-              <Button size="icon" variant="outline" className="absolute -bottom-2 -right-2 rounded-full">
+              <Button 
+                size="icon" 
+                variant="outline" 
+                className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 md:w-10 md:h-10"
+              >
                 <Camera className="h-3 w-3 md:h-4 md:w-4" />
               </Button>
             </div>
-            <div>
+            <div className={`${isMobile ? 'text-center' : ''}`}>
               <h2 className="text-xl md:text-2xl font-semibold">{user.name}</h2>
-              {user.role && <p className="text-muted-foreground text-sm md:text-base">{user.role}</p>}
+              {user.role && <p className="text-muted-foreground text-sm md:text-base mt-1">{user.role}</p>}
             </div>
           </CardHeader>
         </Card>
@@ -55,42 +61,47 @@ const ProfilePage = ({ user }: ProfilePageProps) => {
           <CardHeader>
             <h3 className="text-lg font-semibold">Personal Information</h3>
           </CardHeader>
-          <CardContent className="grid gap-6">
-            <div className="grid gap-4">
-              <div className="grid gap-2">
+          <CardContent className="space-y-6">
+            <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
+              <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
                 <Input id="name" defaultValue={user.name} />
               </div>
-              <div className="grid gap-2">
+              <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="email" defaultValue={user.email} className="pl-10" />
+                  <Input id="email" defaultValue={user.email || "user@example.com"} className="pl-10" />
                 </div>
               </div>
             </div>
             
             <Separator />
             
-            <div className="grid gap-4">
-              <div className="grid gap-2">
+            <div className={`grid gap-4 ${isMobile ? 'grid-cols-1' : 'md:grid-cols-2'}`}>
+              <div className="space-y-2">
                 <Label htmlFor="phone">Phone Number</Label>
                 <div className="relative">
                   <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="phone" defaultValue={user.phone} className="pl-10" />
+                  <Input id="phone" defaultValue={user.phone || "+1 (555) 123-4567"} className="pl-10" />
                 </div>
               </div>
-              <div className="grid gap-2">
+              <div className="space-y-2">
                 <Label htmlFor="location">Location</Label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input id="location" defaultValue={user.location} className="pl-10" />
+                  <Input id="location" defaultValue={user.location || "San Francisco, CA"} className="pl-10" />
                 </div>
               </div>
             </div>
             
-            <div className={`flex ${isMobile ? 'justify-center' : 'justify-end'}`}>
-              <Button className={`${isMobile ? 'w-full md:w-auto' : ''}`}>Save Changes</Button>
+            <div className={`flex gap-3 ${isMobile ? 'flex-col' : 'justify-end'} pt-4`}>
+              <Button variant="outline" className={`${isMobile ? 'w-full' : ''}`}>
+                Cancel
+              </Button>
+              <Button className={`${isMobile ? 'w-full' : ''}`}>
+                Save Changes
+              </Button>
             </div>
           </CardContent>
         </Card>

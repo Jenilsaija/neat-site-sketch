@@ -29,109 +29,111 @@ const queryClient = new QueryClient();
 
 const App = () => {
   // Simulate authenticated state
-  const isAuthenticated = true; // Using false to show auth pages
+  const isAuthenticated = true;
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              {!isAuthenticated ? (
-                <>
-                  <Route path="/auth/login" element={<Login />} />
-                  <Route path="/auth/register" element={<Register />} />
-                  <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-                  <Route path="*" element={<Navigate to="/auth/login" replace />} />
-                </>
-              ) : (
-                <>
-                  <Route path="/" element={
-                    <Layout>
-                      <Dashboard 
-                        user={currentUser}
-                        stats={dashboardData.stats} 
-                        taskCompletionData={dashboardData.taskCompletionData}
-                        activities={dashboardData.activities}
-                      />
-                    </Layout>
-                  } />
-                  <Route path="/projects" element={
-                    <Layout>
-                      <Projects 
-                        user={currentUser} 
-                        projects={projects} 
-                      />
-                    </Layout>
-                  } />
-                  <Route path="/team" element={
-                    <Layout>
-                      <Team 
-                        user={currentUser} 
-                        members={teamMembers} 
-                      />
-                    </Layout>
-                  } />
-                  <Route path="/projects/:id" element={
-                    <Layout>
-                      <ProjectDetails
-                        user={currentUser}
-                        project={projects[0]}
-                      />
-                    </Layout>
-                  } />
-                  <Route path="/tasks/:id" element={
-                    <Layout>
-                      <TaskPage />
-                    </Layout>
-                  } />
-                  <Route path="/messages" element={
-                    <Layout>
-                      <Messages />
-                    </Layout>
-                  } />
-                  <Route path="/profile" element={
-                    <Layout>
-                      <Profile user={currentUser} />
-                    </Layout>
-                  } />
-                  <Route path="/settings" element={
-                    <Layout>
-                      <Settings />
-                    </Layout>
-                  } />
-                  <Route path="/user-settings" element={
-                    <Layout>
-                      <UserSettings />
-                    </Layout>
-                  } />
-                  <Route path="/calendar" element={
-                    <Layout>
-                      <Calendar />
-                    </Layout>
-                  } />
-                  <Route path="/gantt" element={
-                    <Layout>
-                      <GanttChart />
-                    </Layout>
-                  } />
-                  <Route path="/time" element={
-                    <Layout>
-                      <Time />
-                    </Layout>
-                  } />
-                  <Route path="/analytics" element={
-                    <Layout>
-                      <Analytics />
-                    </Layout>
-                  } />
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </>
-              )}
-            </Routes>
-          </BrowserRouter>
+          <div className="min-h-screen bg-background">
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                {!isAuthenticated ? (
+                  <>
+                    <Route path="/auth/login" element={<Login />} />
+                    <Route path="/auth/register" element={<Register />} />
+                    <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                    <Route path="*" element={<Navigate to="/auth/login" replace />} />
+                  </>
+                ) : (
+                  <>
+                    <Route path="/" element={
+                      <Layout>
+                        <Dashboard 
+                          user={currentUser}
+                          stats={dashboardData.stats} 
+                          taskCompletionData={dashboardData.taskCompletionData}
+                          activities={dashboardData.activities}
+                        />
+                      </Layout>
+                    } />
+                    <Route path="/projects" element={
+                      <Layout>
+                        <Projects 
+                          user={currentUser} 
+                          projects={projects} 
+                        />
+                      </Layout>
+                    } />
+                    <Route path="/team" element={
+                      <Layout>
+                        <Team 
+                          user={currentUser} 
+                          members={teamMembers} 
+                        />
+                      </Layout>
+                    } />
+                    <Route path="/projects/:id" element={
+                      <Layout>
+                        <ProjectDetails
+                          user={currentUser}
+                          project={projects[0]}
+                        />
+                      </Layout>
+                    } />
+                    <Route path="/tasks/:id" element={
+                      <Layout>
+                        <TaskPage />
+                      </Layout>
+                    } />
+                    <Route path="/messages" element={
+                      <Layout>
+                        <Messages />
+                      </Layout>
+                    } />
+                    <Route path="/profile" element={
+                      <Layout>
+                        <Profile user={currentUser} />
+                      </Layout>
+                    } />
+                    <Route path="/settings" element={
+                      <Layout>
+                        <Settings />
+                      </Layout>
+                    } />
+                    <Route path="/user-settings" element={
+                      <Layout>
+                        <UserSettings />
+                      </Layout>
+                    } />
+                    <Route path="/calendar" element={
+                      <Layout>
+                        <Calendar />
+                      </Layout>
+                    } />
+                    <Route path="/gantt" element={
+                      <Layout>
+                        <GanttChart />
+                      </Layout>
+                    } />
+                    <Route path="/time" element={
+                      <Layout>
+                        <Time />
+                      </Layout>
+                    } />
+                    <Route path="/analytics" element={
+                      <Layout>
+                        <Analytics />
+                      </Layout>
+                    } />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </>
+                )}
+              </Routes>
+            </BrowserRouter>
+          </div>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
