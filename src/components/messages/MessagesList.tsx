@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Avatar } from '@/components/ui/avatar';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const conversations = [
   {
@@ -29,28 +30,43 @@ const conversations = [
   }
 ];
 
-const MessagesList = () => {
+interface MessagesListProps {
+  onConversationSelect?: (id: string) => void;
+}
+
+const MessagesList = ({ onConversationSelect }: MessagesListProps) => {
+  const isMobile = useIsMobile();
+
   return (
     <div className="space-y-2">
       {conversations.map((conversation) => (
         <button
           key={conversation.id}
-          className={`w-full p-3 flex items-start gap-3 rounded-lg transition-colors hover:bg-accent ${
-            conversation.unread ? 'bg-accent/50' : ''
-          }`}
+          onClick={() => onConversationSelect?.(conversation.id)}
+          className={`w-full flex items-start gap-3 rounded-lg transition-colors hover:bg-accent touch-button
+            ${isMobile ? 'p-3' : 'p-3'} 
+            ${conversation.unread ? 'bg-accent/50' : ''}
+          `}
         >
-          <Avatar className="h-10 w-10">
+          <Avatar className={`${isMobile ? 'h-12 w-12' : 'h-10 w-10'} shrink-0`}>
             <img src={conversation.avatar} alt={conversation.name} />
           </Avatar>
           
-          <div className="flex-1 text-left">
+          <div className="flex-1 text-left min-w-0">
             <div className="flex justify-between items-center mb-1">
-              <span className="font-medium">{conversation.name}</span>
-              <span className="text-xs text-muted-foreground">{conversation.time}</span>
+              <span className={`font-medium truncate ${isMobile ? 'text-base' : 'text-sm'}`}>
+                {conversation.name}
+              </span>
+              <span className={`text-muted-foreground shrink-0 ml-2 ${isMobile ? 'text-sm' : 'text-xs'}`}>
+                {conversation.time}
+              </span>
             </div>
-            <p className="text-sm text-muted-foreground truncate">
+            <p className={`text-muted-foreground truncate ${isMobile ? 'text-sm' : 'text-sm'}`}>
               {conversation.lastMessage}
             </p>
+            {conversation.unread && (
+              <div className={`w-2 h-2 bg-blue-500 rounded-full mt-1 ${isMobile ? '' : ''}`} />
+            )}
           </div>
         </button>
       ))}

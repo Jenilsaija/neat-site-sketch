@@ -100,17 +100,37 @@
 
   body {
     @apply bg-background text-foreground;
+    /* Prevent overscroll bounce on mobile */
+    overscroll-behavior: none;
   }
+
+  /* Mobile-specific styles */
+  @media (max-width: 768px) {
+    body {
+      /* Ensure full height on mobile */
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+    }
+  }
+}
+
+/* Mobile safe area utilities */
+.safe-area-padding {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
 }
 
 /* Task Card Styling */
 .task-card {
-  @apply rounded-lg border border-border bg-card p-4 shadow-sm transition-all hover:shadow-md;
+  @apply rounded-lg border border-border bg-card p-3 md:p-4 shadow-sm transition-all hover:shadow-md;
 }
 
 /* Project Card Styling */
 .project-card {
-  @apply rounded-lg border border-border bg-card p-6 shadow-sm transition-all hover:shadow-md;
+  @apply rounded-lg border border-border bg-card p-4 md:p-6 shadow-sm transition-all hover:shadow-md;
 }
 
 /* Progress Bar Styling */
@@ -128,12 +148,26 @@
 }
 
 .avatar-stack img {
-  @apply rounded-full border-2 border-background w-8 h-8;
+  @apply rounded-full border-2 border-background w-6 h-6 md:w-8 md:h-8;
 }
 
 /* Task Tag Styling */
 .task-tag {
   @apply px-2 py-1 rounded-full text-xs font-medium;
+}
+
+/* Mobile-first responsive grid utilities */
+.mobile-grid {
+  @apply grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 md:gap-4;
+}
+
+.mobile-stats-grid {
+  @apply grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4;
+}
+
+/* Touch-friendly buttons for mobile */
+.touch-button {
+  @apply min-h-[44px] min-w-[44px];
 }
 
 /* Animation utilities */
@@ -155,6 +189,15 @@
   animation: slideIn 0.3s ease-in-out;
 }
 
+@keyframes slideUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.slide-up {
+  animation: slideUp 0.3s ease-in-out;
+}
+
 /* Scrollbar styling */
 @media (min-width: 768px) {
   ::-webkit-scrollbar {
@@ -171,5 +214,51 @@
   
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
+  }
+}
+
+/* Hide scrollbars on mobile for cleaner look */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .mobile-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Mobile app-like styles */
+@media (max-width: 768px) {
+  .mobile-container {
+    @apply px-4 py-3;
+  }
+  
+  .mobile-section {
+    @apply mb-6;
+  }
+  
+  .mobile-card {
+    @apply rounded-xl p-4 shadow-sm;
+  }
+  
+  .mobile-button {
+    @apply h-12 rounded-xl font-medium;
+  }
+  
+  .mobile-input {
+    @apply h-12 rounded-xl px-4;
+  }
+}
+
+/* Desktop enhancements */
+@media (min-width: 768px) {
+  .desktop-container {
+    @apply px-6 py-4;
+  }
+  
+  .desktop-section {
+    @apply mb-8;
   }
 }
